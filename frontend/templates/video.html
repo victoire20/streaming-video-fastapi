@@ -1,0 +1,600 @@
+{% extends 'layouts/master.html' %}
+{% block description %}
+    Rentré dans l'univers de l'animé.
+{% endblock %}
+{% block keywords %}
+    annimé, anime, manga, fight, funny, epic
+{% endblock %}
+{% block title %}ZoneAnimee | Naruto{% endblock %}
+
+{% block content %}
+<style>
+   .playlist-list-item-desc > p{
+      color: white !important;
+   }
+
+   ul.horyzontal-list {
+      display: flex;
+      padding: 0;
+      margin: 0;
+      list-style-type: none;
+   }
+
+   ul.horyzontal-list li {
+      color: white;
+      margin-right: 5px; /* Adjust the spacing as needed */
+      position: relative;
+      padding-right: 5px; /* Space for the line decoration */
+   }
+
+   ul.horizontal-list li:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: white; /* Line color set to white */
+   }
+  
+   ul.horizontal-list li.no-decoration::after {
+         display: none;
+   }
+
+   @media (max-width: 767.98px) {
+      .mt-small {
+          margin-top: 10px;
+      }
+   }
+
+   .custom-link {
+      color: #e53637 !important;
+      text-decoration: none;
+   }
+
+   .custom-link:hover {
+      color: white !important;
+   }
+
+   .icon-btn {
+      color: #e53637;
+      cursor: pointer;
+   }
+
+   .icon-btn:hover {
+      color: white;
+   }
+
+   /* Centrage des boutons de navigation */
+   .owl-nav {
+      color: white;
+      text-align: center;
+   }
+
+   /* Centrer les indicateurs de points */
+   .owl-dots {
+      text-align: center;
+      margin-top: 0px !important; /* Espacement optionnel entre les boutons et les indicateurs */
+   }
+
+   /* Style pour les boutons de navigation */
+   .owl-nav button {
+      color: white; /* Couleur du texte des boutons */
+      background-color: transparent; /* Fond transparent */
+      border: none; /* Pas de bordure */
+      font-size: 24px; /* Taille de la police */
+      cursor: pointer; /* Curseur pointeur */
+   }
+
+   .owl-nav button:hover {
+      color: #ccc; /* Couleur au survol */
+   }
+
+   /* Style pour les indicateurs de points */
+   .owl-dots .owl-dot span {
+      background-color: white; /* Couleur de fond des points */
+      width: 10px; /* Largeur des points */
+      height: 10px; /* Hauteur des points */
+      display: block; /* Affichage en bloc */
+      border-radius: 50%; /* Forme ronde */
+      margin: 5px; /* Marges autour des points */
+   }
+
+   .owl-dots .owl-dot.active span {
+      background-color: #e53637; /* Couleur de fond pour le point actif */
+   }
+
+   .product__item {
+      width: 200px;
+   }
+
+   .product__item__pic {
+      height: 200px;
+   }
+
+   .a-title {
+      background: none !important;
+      padding: 0 !important;
+      margin: 0px 0px 0px 0px !important;
+   }
+
+   .a-title:hover {
+      color: #e53637 !important;
+   }
+
+   .plus-btn {
+      color: #29b47344;
+      cursor: pointer;
+   }
+
+   .plus-btn:hover {
+      color: #29b474;
+   }
+
+   .min-btn {
+      color: #e536367b;
+      cursor: pointer;
+   }
+
+   .min-btn:hover {
+      color: #e53637;
+   }
+
+   .share-btn {
+      font-size: small;
+      color: white;
+   }
+
+   .share-btn:hover {
+      color: #e53637;
+      cursor: pointer;
+   }
+
+   .anime__review__list {
+      max-height: 500px;
+      overflow-y: auto;
+      margin: 20px;
+      scrollbar-width: thin;
+   }
+
+   .anime__review__list::-webkit-scrollbar {
+      width: 10px;
+   }
+
+   .anime__review__list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+   }
+
+   .anime__review__list::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 5px;
+   }
+
+   .anime__review__list::-webkit-scrollbar-thumb:hover {
+      background: #555;
+   }
+</style>
+
+<!-- Breadcrum Begin -->
+<div class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__links">
+                    <a href="/"><i class="fa fa-home"></i> Home</a>
+                    <a href="/1/category">Romance</a>
+                    <span>Fate Stay Night: Unlimited Blade</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcrum End -->
+
+<!-- Anime Section Begin -->
+<div class="container">
+   <!-- Ads div Section Begin -->
+   <div class="row mt-3">
+      <div class="col-12">
+         <div style="background-color: grey; 
+         border: 1px solid #ccc; width: 100%; height: 100px">
+         </div>
+      </div>
+   </div>
+   <!-- Ads div Section End -->
+
+   <div class="row">
+      <div class="col-lg-9">
+         <section class="anime-details spad" style="padding-top: 20px !important">
+            <div class="container">
+               <div class="row">
+                     <div class="col-lg-12">
+                     <!-- Description Movie Begin -->
+                     <div class="row">
+                        <div class="col-12 mb-3">
+                           <h3 style="color: white">
+                              The Fast and the Furious
+                           </h3>
+                        </div>
+                        <div class="col-12 mb-3">
+                           <ul class="horyzontal-list">
+                              <li class="no-decoration">
+                                 <i class="fa fa-star-o icon-btn"></i>
+                                 9.7 
+                                 &nbsp;&nbsp;<span style="color: #e53637">|</span>
+                              </li>
+                              <li>
+                                 Action, Action, Action, Action, Action
+                                 &nbsp;&nbsp;<span style="color: #e53637">|</span>
+                              </li>
+                              <li>
+                                 2021 
+                                 &nbsp;&nbsp;<span style="color: #e53637">|</span>
+                              </li>
+                              <li>
+                                 1 h 42 min 
+                                 &nbsp;&nbsp;<span style="color: #e53637">|</span>
+                              </li>
+                              <li>16+</li>
+                           </ul>
+                        </div>
+                        <div class="col-12 mb-3">
+                           <p style="color: white">
+                              It is a long established fact that a reader will be distracted by the 
+                              readable content of a page when looking at its layout. The point of using 
+                              Lorem Ipsum is that it has a more-or-less normal distribution of letters, 
+                              as opposed to using 'Content here, content here', making it look like 
+                              readable English.
+                           </p>
+                        </div>
+                     </div>
+                     <!-- Description Movie Begin -->
+
+                     <!-- Player Begin -->
+                     <div class="anime__video__player" style="margin-bottom: 20px !important;">
+                        
+                     </div>
+                     <!-- Player End -->
+
+                     <!-- Download Begin -->
+                     <div class="row mb-5">
+                        <div class="col-12 col-md-8" style="padding-left: 30px !important;">
+                           <div class="row">
+                              <h6 style="color: white;">
+                                 <i style="color: #e53637" class="fa fa-download" aria-hidden="true"></i>
+                                 &nbsp;Download:
+                              </h6>&nbsp;&nbsp;
+                              <ul class="horyzontal-list">
+                                 <li>
+                                    <a href="#" class="custom-link">Link 1</a>
+                                    &nbsp;&nbsp;<span style="color: #e53637">|</span>
+                                 </li>
+                                 <li>
+                                    <a href="#" class="custom-link">Link 2</a>
+                                    &nbsp;&nbsp;<span style="color: #e53637">|</span>
+                                 </li>
+                                 <li>
+                                    <a href="#" class="custom-link">Link 3</a>
+                                    &nbsp;&nbsp;<span style="color: #e53637">|</span>
+                                 </li>
+                                 <li>
+                                    <a href="#" class="custom-link">Link 4</a>
+                                 </li>
+                              </ul>
+                           </div>
+                        </div>
+                        <div class="col-12 col-md-4 text-md-right mt-small">
+                           <div class="row">
+                              <div class="col-12">
+                                 <h6 style="color: white;">
+                                    <i class="fa fa-bookmark-o icon-btn" aria-hidden="true"></i>
+                                    &nbsp;Add to favorites
+                                 </h6>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- Download End -->
+
+                     <!-- Similar Section Begin -->
+                     <div class="anime__details__episodes" style="margin-bottom: 20px !important;">
+                        <div class="section-title">
+                           <h5>Similar animme</h5>
+                        </div>
+                        <!-- Item Owl Carrousel Begin -->
+                        <div class="owl-carousel owl-theme"></div>
+                        <!-- Item Owl Carrousel End -->
+                     </div>
+                     <!-- Similar Section End -->
+
+                     <!-- Similar Section Begin -->
+                     <div class="anime__details__episodes">
+                        <div class="section-title">
+                           <h5>Genres</h5>
+                        </div>
+                        <a href="#">Action</a>
+                        <a href="#">Thriller</a>
+                        <a href="#">Crime</a>
+                     </div>
+                     <!-- Similar Section End -->
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-lg-8">
+                     <div class="anime__details__review">
+                        <div class="section-title">
+                           <h5>Reviews</h5>
+                        </div>
+
+                        <div class="anime__review__list" style="width: 100%">
+                           <!-- Comment Begin -->
+                           <div class="anime__review__item" style="width: 100%; padding-right: 20px">
+                              <div class="anime__review__item__pic">
+                                 <img src="{{ url_for('static', path='/img/anime/review-1.jpg') }}" alt="">
+                              </div>
+                              <div class="anime__review__item__text">
+                                 <h6>Chris Curry - <span>1 Hour ago</span></h6>
+                                 <p>whachikan Just noticed that someone categorized this 
+                                    as belonging to the genre "demons" LOL
+                                 </p>
+                                 <hr style="background: white;">
+                                 <div class="row">
+                                    <div class="col-6">
+                                       <i class="fa fa-plus-square-o plus-btn" aria-hidden="true"></i>
+                                       &nbsp;<span style="color: white;">12</span>
+                                       &nbsp;<span style="color: white;">|</span>
+                                       &nbsp;<span style="color: white;">7</span>
+                                       &nbsp;<i class="fa fa-minus-square-o min-btn" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                       <span class="share-btn">
+                                          <i class="fa fa-share" aria-hidden="true"></i>
+                                          REPLY
+                                       </span>&nbsp;&nbsp;
+                                       <span class="share-btn" id="more-reply-btn" aria-expanded="false">
+                                          <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
+                                          More
+                                       </span>
+                                    </div>
+                                 </div>
+                              </div>
+                              <!-- Comment Reply Begin -->
+                              <div class="collapse mt-2" id="collapseExample">
+                                 <div class="anime__review__item" style="margin-left: 50px;">
+                                    <div class="anime__review__item__pic">
+                                       <img src="http://127.0.0.1:8001/static/img/anime/review-2.jpg" alt="">
+                                    </div>
+                                    <div class="anime__review__item__text">
+                                       <h6>Lewis Mann - <span>5 Hour ago</span></h6>
+                                       <p>Finally it came out ages ago</p>
+                                    </div>
+                                 </div>
+                              </div>
+                              <!-- Comment Reply End -->
+                           </div>
+                           <!-- Comment End -->
+                           <div class="anime__review__item" style="width: 100%; padding-right: 20px">
+                              <div class="anime__review__item__pic">
+                                 <img src="{{ url_for('static', path='/img/anime/review-2.jpg') }}" alt="">
+                              </div>
+                              <div class="anime__review__item__text">
+                                 <h6>Lewis Mann - <span>5 Hour ago</span></h6>
+                                 <p>Finally it came out ages ago</p>
+                              </div>
+                           </div>
+                           <div class="anime__review__item" style="width: 100%; padding-right: 20px">
+                              <div class="anime__review__item__pic">
+                                 <img src="{{ url_for('static', path='/img/anime/review-3.jpg') }}" alt="">
+                              </div>
+                              <div class="anime__review__item__text">
+                                 <h6>Louis Tyler - <span>20 Hour ago</span></h6>
+                                 <p>Where is the episode 15 ? Slow update! Tch</p>
+                              </div>
+                           </div>
+                           <div class="anime__review__item" style="width: 100%; padding-right: 20px">
+                              <div class="anime__review__item__pic">
+                                 <img src="{{ url_for('static', path='/img/anime/review-4.jpg') }}" alt="">
+                              </div>
+                              <div class="anime__review__item__text">
+                                 <h6>Chris Curry - <span>1 Hour ago</span></h6>
+                                 <p>whachikan Just noticed that someone categorized this as belonging to the genre
+                                    "demons" LOL
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+
+                     <div class="anime__details__form">
+                        <div class="section-title">
+                           <h5>Your Comment</h5>
+                        </div>
+                        <form action="#">
+                           <textarea placeholder="Your Comment"></textarea>
+                           <button type="submit"><i class="fa fa-location-arrow"></i> Review</button>
+                        </form>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </section>
+      </div>
+
+
+      <div class="col-lg-3 col-md-6 col-sm-8">
+         <!-- Ads div Section Begin -->
+         <div class="row mt-3">
+            <div class="col-12">
+               <div style="background-color: grey; 
+               border: 1px solid #ccc; width: 100%; height: 200px">
+               </div>
+            </div>
+         </div>
+         <!-- Ads div Section End -->
+         <!-- Ads div Section Begin -->
+         <div class="row mt-3">
+            <div class="col-12">
+               <div style="background-color: grey; 
+               border: 1px solid #ccc; width: 100%; height: 200px">
+               </div>
+            </div>
+         </div>
+         <!-- Ads div Section End -->
+         <!-- Ads div Section Begin -->
+         <div class="row mt-3">
+            <div class="col-12">
+               <div style="background-color: grey; 
+               border: 1px solid #ccc; width: 100%; height: 200px">
+               </div>
+            </div>
+         </div>
+         <!-- Ads div Section End -->
+         <!-- Ads div Section Begin -->
+         <div class="row mt-3">
+            <div class="col-12">
+               <div style="background-color: grey; 
+               border: 1px solid #ccc; width: 100%; height: 200px">
+               </div>
+            </div>
+         </div>
+         <!-- Ads div Section End -->
+         <!-- Ads div Section Begin -->
+         <div class="row mt-3">
+            <div class="col-12">
+               <div style="background-color: grey; 
+               border: 1px solid #ccc; width: 100%; height: 800px">
+               </div>
+            </div>
+         </div>
+         <!-- Ads div Section End -->
+      </div>
+   </div>
+</div>   
+<!-- Anime Section End -->
+
+<script src="https://cdn.jsdelivr.net/npm/@oplayer/plugins@latest/dist/playlist.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@oplayer/core@latest/dist/index.ui.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@oplayer/full@latest/dist/index.min.js"></script>
+
+<script>
+   $(function() {
+      console.log('Loader');
+      // Function to fetch data and initialize the carousel
+      function fetchCarouselData() {
+         fetch('http://127.0.0.1:8000/test')
+         .then(response => response.json())
+         .then(data => {console.log(data)
+            var carousel = $(".owl-carousel");
+            // Append items to the carousel
+            data.forEach(item => {
+               var carouselItem = `
+                     <div class="item">
+                        <div class="product__item">
+                           <div class="product__item__pic set-bg" style="background-image: url('${item.image}');">
+                                 <div class="ep">${item.ep}</div>
+                                 <div class="comment"><i class="fa fa-comments"></i> ${item.comments}</div>
+                                 <div class="view"><i class="fa fa-eye"></i> ${item.views}</div>
+                           </div>
+                           <div class="product__item__text">
+                                 <ul>
+                                    ${item.tags.map(tag => `<li>${tag}</li>`).join('')}
+                                 </ul>
+                                 <h5 style="color: white;">
+                                    <a href="#" class="a-title">${item.title}</a>
+                                 </h5>
+                           </div>
+                        </div>
+                     </div>
+               `;
+               carousel.append(carouselItem);
+            });
+
+            // Initialize Owl Carousel
+            carousel.owlCarousel({
+               margin: 10,
+               responsiveClass: true,
+               autoWidth: true,
+               dots: true
+            });
+         })
+         .catch(error => console.error('Error fetching data:', error));
+      }
+
+      // Fetch data and initialize the carousel on page load
+      fetchCarouselData();
+
+      var source_playlist = [];
+      var video_index = 0;
+  
+      fecthAllEps().then(function(source_playlist) {
+         //console.log(source_playlist);
+         OPlayer.make('.anime__video__player', {
+            //source: {
+            //src: 'http://localhost:8000/video/video/video',
+            //format: 'auto',
+            //poster: 'https://cdn.jsdelivr.net/gh/shiyiya/QI-ABSL@master/o/poster.png'
+            //}
+         })
+         .use([
+            OUI(),
+            OHls({
+               forceHLS: true,
+               library: 'https://cdn.jsdelivr.net/npm/hls.js@0.14.17/dist/hls.min.js'
+            }),
+            new OPlaylist({
+               initialIndex: video_index,
+               autoNext: true,
+               sources: source_playlist
+            }),
+            ODash({ library: 'https://cdn.dashjs.org/latest/dash.all.min.js' }),
+            OMpegts({ library: 'https://cdn.jsdelivr.net/npm/mpegts.js@latest/dist/mpegts.min.js' }),
+         ])
+         .on(['play', 'pause'], listener)
+         .create();
+      }).catch(function(error) {
+          console.error("Failed to fetch episodes:", error);
+      });
+   });
+  
+   function fecthAllEps() {
+      return new Promise(function(resolve, reject) {
+          $.ajax({
+              url: 'http://127.0.0.1:8000/video/videos',
+              method: 'GET',
+              dataType: 'JSON',
+              success: function(data) {
+                  var source_playlist = data.map(function(movie) {
+                     return {
+                        title: movie.name,
+                        src: 'http://localhost:8000/video/'+movie.name+'/video',
+                        format: 'auto',
+                        //autoplay: true,
+                        poster: 'https://cdn.jsdelivr.net/gh/shiyiya/QI-ABSL@master/o/poster.png',
+                        duration: movie.duration,
+                     };
+                  });
+                  resolve(source_playlist);
+              },
+              error: function(error) {
+                  reject(error);
+              }
+          });
+      });
+   }
+  
+   const listener = (event) => {
+      console.log(event);
+   };
+
+   $('#more-reply-btn').on('click', function(event) {
+      event.preventDefault();
+      var $collapse = $('#collapseExample');
+      if ($collapse.hasClass('show')) {
+          $collapse.collapse('hide'); // Si le collapse est ouvert, le fermer
+      } else {
+          $collapse.collapse('show'); // Sinon, l'ouvrir
+      }
+   });
+</script>
+
+{% endblock %}

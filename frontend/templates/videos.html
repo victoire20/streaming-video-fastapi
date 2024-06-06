@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>FastAPI video streaming</title>
+    </head>
+    <body>
+
+        <div id='oplayer'></div>
+        <script src="https://cdn.jsdelivr.net/npm/@oplayer/plugins@latest/dist/playlist.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@oplayer/core@latest/dist/index.ui.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@oplayer/full@latest/dist/index.min.js"></script>
+        <script>
+            //const vastLibrary = new VASTLibrary({
+                //adTagUrl: 'URL_de_votre_fichier_VAST.xml'
+            //})
+
+            //function displayVastAd() {
+                //vastLibrary.loadAds();
+            //}
+
+            const listener = (event) => {
+                console.log(event)
+            }
+
+            var video_index = 0
+            const source_playlist = [
+                {
+                    title: '君の名は - MP4',
+                    src: 'https://cdn.jsdelivr.net/gh/shiyiya/QI-ABSL@master/o/君の名は.mp4',
+                    format: 'auto',
+                    //autoplay: true,
+                    poster: 'https://cdn.jsdelivr.net/gh/shiyiya/QI-ABSL@master/o/poster.png',
+                    duration: '01:32',
+                    thumbnails: {
+                        src: '/thumbnails.jpg',
+                        number: 100
+                    },
+                    subtitles: [
+                    {
+                        name: 'Default',
+                        default: true,
+                        src: 'https://cdn.jsdelivr.net/gh/shiyiya/QI-ABSL@master/o/君の名は.srt',
+                        offset: 2
+                    }
+                    ],
+                    highlight: [
+                    {
+                        time: 12,
+                        text: '谁でもいいはずなのに'
+                    },
+                    {
+                        time: 34,
+                        text: '夏の想い出がまわる'
+                    },
+                    {
+                        time: 58,
+                        text: 'こんなとこにあるはずもないのに'
+                    },
+                    {
+                        time: 88,
+                        text: '－－终わり－－'
+                    }
+                    ]
+                },
+                {
+                    title: 'Big Buck Bunny - HLS',
+                    src: 'http://localhost:8000/video/video/video',
+                    format: 'auto',
+                    //autoplay: true,
+                    duration: '10:34'
+                },
+                {
+                    title: 'DASH',
+                    src: 'https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd',
+                    format: 'auto',
+                    //autoplay: true,
+                    duration: '10:34'
+                },
+                {
+                    title: 'FLV',
+                    src: 'https://cdn.jsdelivr.net/gh/shiyiya/QI-ABSL@master/o/weathering-with-you.flv',
+                    format: 'auto',
+                    //autoplay: true,
+                    duration: '02:02'
+                }
+            ]
+
+
+            OPlayer.make('#oplayer', {
+                //source: {
+                    //src: 'http://localhost:8000/video/video/video',
+                    //format: 'auto',
+                    //poster: 'https://cdn.jsdelivr.net/gh/shiyiya/QI-ABSL@master/o/poster.png'
+                //}
+            })
+            .use([
+                OUI(),
+                OHls({
+                    forceHLS: true,
+                    library: 'https://cdn.jsdelivr.net/npm/hls.js@0.14.17/dist/hls.min.js'
+                }),
+                new OPlaylist({
+                    initialIndex: video_index,
+                    autoNext: true,
+                    sources: source_playlist
+                }),
+                ODash({ library: 'https://cdn.dashjs.org/latest/dash.all.min.js' }),
+                OMpegts({ library: 'https://cdn.jsdelivr.net/npm/mpegts.js@latest/dist/mpegts.min.js' }),
+            ])
+            .on(['play', 'pause'], listener)
+            .create()
+
+            //OPlayer.on('play', listener)
+        </script>
+    </body>
+</html>
