@@ -19,9 +19,39 @@ async def categories_root(request: Request, id: int):
     return templates.TemplateResponse("category.html", context={"request": request})
 
 
+@app.get('/dcma')
+async def dcma_root(request: Request):
+    return templates.TemplateResponse("dcma.html", context={"request": request})
+
+
+@app.get('/faq')
+async def faq_root(request: Request):
+    return templates.TemplateResponse("faq.html", {"request": request})
+
+
+@app.get('/contact')
+async def faq_root(request: Request):
+    return templates.TemplateResponse("contact.html", {"request": request})
+
+
 @app.get('/{name}/watch')
 async def watch_anime_root(request: Request, name: str):
     return templates.TemplateResponse("video.html", context={"request": request})
+
+
+@app.get('/login')
+async def faq_root(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
+@app.get('/register')
+async def faq_root(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
+
+
+@app.get('/forgot-pwd')
+async def forgotten_password_root(request: Request):
+    return templates.TemplateResponse("forgot-password.html", {"request": request})
 
 
 if __name__ == '__main__':
