@@ -22,3 +22,18 @@
         </div>
     </div>
 </footer>
+
+
+<script>
+    $(function() {
+        $.get('http://127.0.0.1:8000/categories', data=> {
+            var list_category = ''
+            data.map(item => {
+                if(item.is_active) {
+                    list_category += `<li><a href='/${item.id}/category'>${item.name}</a></li>`
+                }
+            })
+            $('#categories-menu').html(list_category)
+        })
+    })
+</script>

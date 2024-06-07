@@ -1,0 +1,46 @@
+{% extends 'layouts/master.html' %}
+{% block description %}
+Back office du site
+{% endblock %}
+{% block keywords %}
+dashboard, backoffice
+{% endblock %}
+{% block author%}TI-GENERATION{% endblock %}
+{% block title %}ZoneAnimee | Dashboard{% endblock %}
+
+{% block content%}
+
+<!-- sign in -->
+<div class="sign section--bg" data-bg="{{ url_for('static', path='/img/bg.jpg') }}">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="sign__content">
+                    <!-- authorization form -->
+                    <form action="#" class="sign__form">
+                        <a href="index.html" class="sign__logo">
+                            <img src="{{ url_for('static', path='/img/logo.svg') }}" alt="">
+                        </a>
+
+                        <div class="sign__group">
+                            <input type="text" class="sign__input" placeholder="Email">
+                        </div>
+
+                        <div class="sign__group sign__group--checkbox">
+                            <input id="remember" name="remember" type="checkbox" checked="checked">
+                            <label for="remember">I agree to the <a href="#">Privacy policy</a></label>
+                        </div>
+                        
+                        <button class="sign__btn" type="button">Send</button>
+
+                        <span class="sign__text">We will send a password to your Email</span>
+                    </form>
+                    <!-- end authorization form -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end sign in -->
+
+{% endblock %}

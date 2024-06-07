@@ -1,5 +1,5 @@
 from pathlib import Path
-from fastapi import FastAPI, Request, Response, Header
+from fastapi import FastAPI, Request, Response, Header, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn, zipfile, io, os, ffmpeg
@@ -23,6 +23,18 @@ app.add_middleware(
 
 
 CHUNK_SIZE = 10*1024*1024 # 10 MB
+
+
+@app.get('/categories', status_code=status.HTTP_200_OK)
+async def get_categories(request: Request):
+    categories = [
+        {'id': 1, 'name': 'Action', 'is_active': True},
+        {'id': 2, 'name': 'Adventure', 'is_active': True},
+        {'id': 3, 'name': 'Horror', 'is_active': True},
+        {'id': 4, 'name': 'Romance', 'is_active': False},
+        {'id': 5, 'name': 'Comic', 'is_active': True}
+    ]
+    return categories
 
 
 @app.get('/{video_name}/videos')
