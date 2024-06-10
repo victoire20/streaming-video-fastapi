@@ -481,7 +481,7 @@
       console.log('Loader');
       // Function to fetch data and initialize the carousel
       function fetchCarouselData() {
-         fetch('http://127.0.0.1:8000/test')
+         fetch('http://127.0.0.1:8000/other-playlist')
          .then(response => response.json())
          .then(data => {console.log(data)
             var carousel = $(".owl-carousel");
@@ -549,7 +549,7 @@
             ODash({ library: 'https://cdn.dashjs.org/latest/dash.all.min.js' }),
             OMpegts({ library: 'https://cdn.jsdelivr.net/npm/mpegts.js@latest/dist/mpegts.min.js' }),
          ])
-         .on(['play', 'pause'], listener)
+         .on(['play', 'pause', 'playing'], listener)
          .create();
       }).catch(function(error) {
           console.error("Failed to fetch episodes:", error);
@@ -583,8 +583,36 @@
    }
   
    const listener = (event) => {
-      console.log(event);
+      var firstTime = 0
+      var baseURI = event.payload.srcElement.baseURI
+      console.log(event.payload.srcElement.baseURI)
+
+      if(event.type == 'playing') {
+         firstTime = event.payload.timeStamp
+      }
+      
+      if(event.type == 'pause') {
+         //playVastAd(event.target)
+      }
+      console.log(firstTime)
    };
+
+   function playVastAd(player) {
+      return new Promise((resolve, reject) => {
+         const vastUrl = 'https://youtu.be/TnW_fRYWIn0'
+         const vastPlayer = new VASTPlayer(document.getElementById('vast-ad-container'))
+
+         vastPlayer.load(vastUrl)
+         .then(() => {
+            return vastPlayer.startAd()
+         })
+         .then(() => {
+            vastPlayer.on('AdStopped', resolve)
+            vastPlayer.on('AdError', reject)
+         })
+         .catch(reject)
+      })
+   }
 
    $('#more-reply-btn').on('click', function(event) {
       event.preventDefault();

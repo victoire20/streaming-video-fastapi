@@ -1,11 +1,17 @@
 from pathlib import Path
-from fastapi import FastAPI, Request, Response, Header, status
+from fastapi import FastAPI, Request, Response, Header, status, HTTPException
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn, zipfile, io, os, ffmpeg
 
+from auth import router as auth_router
+
+from typing import Optional
+
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory='static'), name="static")
 
 origins = [
     'http://127.0.0.1:8000',
@@ -21,8 +27,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_router.router)
+
 
 CHUNK_SIZE = 10*1024*1024 # 10 MB
+
+
+@app.get('/', status_code=status.HTTP_200_OK)
+async def index_root():
+    return {'message': 'API Running'}
 
 
 @app.get('/categories', status_code=status.HTTP_200_OK)
@@ -126,8 +139,8 @@ async def read_zip_file(
         return JSONResponse(content={"error": str(e)}, status_code=500)
     
 
-@app.get('/test')
-async def test_root(request: Request):
+@app.get('/other-playlist')
+async def other_playlist_root(request: Request):
     data = [
         {
             "image": "http://127.0.0.1:8001/static/img/anime/review-1.jpg",
@@ -176,11 +189,260 @@ async def test_root(request: Request):
             "views": 5000,
             "title": "Another Anime",
             "tags": ["Drama", "Movie"]
-        },
+        }
     ]
     return data
+
+
+@app.get('/playlist', status_code=status.HTTP_200_OK)
+async def playlist_root(
+    request: Request, 
+    limit: Optional[int] = Header(6), 
+    category: Optional[str] = None
+):
+    data = [
+        {
+            'title': 'trending now',
+            'data': [
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/trending/trend-1.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'The Seven Deadly Sins: Wrath of the Gods',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/trending/trend-2.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Gintama Movie 2: Kanketsu-hen - Yorozuya yo Eien',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/trending/trend-3.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Shingeki no Kyojin Season 3 Part 2',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/trending/trend-4.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Fullmetal Alchemist: Brotherhood',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/trending/trend-5.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Shiratorizawa Gakuen Koukou',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/trending/trend-6.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Code Geass: Hangyaku no Lelouch R2',
+                    "tags": ["Action", "Movie"]
+                }
+            ]
+        },
+        {
+            'title': 'popular shows',
+            'data': [
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/popular/popular-1.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Sen to Chihiro no Kamikakushi',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/popular/popular-2.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Kizumonogatari III: Reiket su-hen',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/popular/popular-3.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Shirogane Tamashii hen Kouhan sen',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/popular/popular-4.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Rurouni Kenshin: Meiji Kenkaku Romantan',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/popular/popular-5.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Mushishi Zoku Shou 2nd Season',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/popular/popular-6.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Monogatari Series: Second Season',
+                    "tags": ["Action", "Movie"]
+                }
+            ]
+        },
+        {
+            'title': 'recently added shows',
+            'data': [
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/recent/recent-1.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Great Teacher Onizuka',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/recent/recent-2.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Fate/stay night Movie: Heaven\'s Feel - II. Lost',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/recent/recent-3.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Mushishi Zoku Shou: Suzu no Shizuku',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/recent/recent-4.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Fate/Zero 2nd Season',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/recent/recent-5.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Kizumonogatari II: Nekket su-hen',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/recent/recent-6.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'The Seven Deadly Sins: Wrath of the Gods',
+                    "tags": ["Action", "Movie"]
+                }
+            ]
+        },
+        {
+            'title': 'live action',
+            'data': [
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/live/live-1.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Shouwa Genroku Rakugo Shinjuu',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/live/live-2.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Mushishi Zoku Shou 2nd Season',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/live/live-3.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Mushishi Zoku Shou: Suzu no Shizuku',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/live/live-4.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'The Seven Deadly Sins: Wrath of the Gods',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/live/live-5.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Fate/stay night Movie: Heaven\'s Feel - II. Lost',
+                    "tags": ["Action", "Movie"]
+                },
+                {
+                    'image': 'http://127.0.0.1:8001/static/img/live/live-6.jpg',
+                    'ep': '18 / 18',
+                    'comments': 11,
+                    'views': 9141,
+                    'title': 'Kizumonogatari II: Nekketsu-hen',
+                    "tags": ["Action", "Movie"]
+                }
+            ]
+        }
+    ]
     
+    category = category.lower() if category else None
     
+    result = []
+    
+    for category_data in data:
+        filtered_items = category_data['data']
+    
+        if category:
+            filtered_items  = [
+                item for item in filtered_items if category in [tag.lower() for tag in item['tags']]
+            ]
+        
+        limited_items = filtered_items[:limit]
+        
+        if limited_items:
+            result.append({
+                'title': category_data['title'],
+                'data': limited_items
+            })
+            
+    if category and not result:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='No video is recorded for this category.'
+        )
+    
+    return result
+       
     
 if __name__ == '__main__':
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
