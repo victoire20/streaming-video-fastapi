@@ -20,6 +20,7 @@ from core import config as config_env
 from core.database import Base
 from core.models import User
 from core.models import Genre
+from core.models import Langue
 from core.models import Movie
 from core.models import GenreMovie
 from core.models import DownloadLink

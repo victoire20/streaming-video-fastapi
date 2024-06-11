@@ -3,7 +3,6 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from core.database import get_db
 from core.security import get_token_payload, oauth2_scheme
-from core.models import User
 from auth import services, responses, schemas
 
 
@@ -12,6 +11,11 @@ router = APIRouter(
     tags=['Auth Router'],
     responses={404: {"description": "Not found"}}
 )
+
+
+@router.post("/register", status_code=status.HTTP_200_OK)
+async def create_profil(request: schemas.User, db: Session = Depends(get_db)):
+    return await services.create_profil(request, db)
 
 
 @router.post("/token", response_model=responses.TokenResponse, status_code=status.HTTP_200_OK)

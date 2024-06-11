@@ -1,8 +1,8 @@
-"""First Migration
+"""First migration
 
-Revision ID: a2e775a64419
+Revision ID: f77a51178afa
 Revises: 
-Create Date: 2024-06-10 17:57:40.193531
+Create Date: 2024-06-11 16:53:22.584876
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'a2e775a64419'
+revision: str = 'f77a51178afa'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,9 +25,21 @@ def upgrade() -> None:
     sa.Column('libelle', sa.String(length=200), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
-    sa.PrimaryKeyConstraint('id')
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('libelle')
     )
     op.create_index(op.f('ix_genres_id'), 'genres', ['id'], unique=False)
+    op.create_table('languages',
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('libelle', sa.String(length=200), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('libelle')
+    )
+    op.create_index(op.f('ix_languages_id'), 'languages', ['id'], unique=False)
     op.create_table('users',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('email', sa.String(length=300), nullable=True),
@@ -35,15 +47,18 @@ def upgrade() -> None:
     sa.Column('password', sa.String(length=300), nullable=True),
     sa.Column('is_admin', sa.Boolean(), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('is_verified', sa.Boolean(), nullable=True),
     sa.Column('first_connection', sa.DateTime(), nullable=True),
     sa.Column('last_connection', sa.DateTime(), nullable=True),
     sa.Column('registered_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('email'),
+    sa.UniqueConstraint('username')
     )
     op.create_index(op.f('ix_users_id'), 'users', ['id'], unique=False)
     op.create_table('movies',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('movieGenreId', sa.Integer(), nullable=True),
+    sa.Column('langueId', sa.Integer(), nullable=True),
     sa.Column('title', sa.String(length=200), nullable=True),
     sa.Column('cover_image', sa.String(length=300), nullable=True),
     sa.Column('description', sa.String(length=300), nullable=True),
@@ -57,7 +72,7 @@ def upgrade() -> None:
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['movieGenreId'], ['genres.id'], onupdate='CASCADE', ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['langueId'], ['languages.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_movies_id'), 'movies', ['id'], unique=False)
@@ -77,6 +92,7 @@ def upgrade() -> None:
     op.create_table('download_links',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('movieId', sa.Integer(), nullable=True),
+    sa.Column('advertisement', sa.String(length=100), nullable=True),
     sa.Column('link', sa.String(length=500), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['movieId'], ['movies.id'], onupdate='CASCADE', ondelete='CASCADE'),
@@ -119,6 +135,8 @@ def downgrade() -> None:
     op.drop_table('movies')
     op.drop_index(op.f('ix_users_id'), table_name='users')
     op.drop_table('users')
+    op.drop_index(op.f('ix_languages_id'), table_name='languages')
+    op.drop_table('languages')
     op.drop_index(op.f('ix_genres_id'), table_name='genres')
     op.drop_table('genres')
     # ### end Alembic commands ###
