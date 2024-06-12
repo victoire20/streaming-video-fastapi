@@ -1,22 +1,33 @@
 from fastapi import APIRouter, status, Depends, Request, HTTPException
 from sqlalchemy.orm import Session
+from core.security import oauth2_scheme, get_current_user
 from core.database import get_db
-from user import services, schemas
+from user import services, schemas, responses
+
+from typing import List
 
 
 router = APIRouter(
     prefix='/users',
     tags=['Users Router'],
-    responses={404: {"description": "Not found"}}
+    responses={404: {"description": "Not found"}},
+    dependencies=[Depends(oauth2_scheme)]
 )
 
 
-@router.get('/', status_code=status.HTTP_200_OK)
-async def get_users(db: Session = Depends(get_db)):
-    return await services.get_users(db)
+@router.get('/me', status_code=status.HTTP_200_OK)
+async def get_me(request: Request):
+    if not request.user:
+        return {"detail": "Not authenticated"}
+    return request.user
 
 
-@router.get('/{id}/', status_code=status.HTTP_200_OK)
+@router.get('/', response_model=List[responses.User], status_code=status.HTTP_200_OK)
+async def get_users(request: Request, db: Session = Depends(get_db)):
+    return await services.get_users(request, db)
+
+
+@router.get('/{id}/', response_model=responses.User, status_code=status.HTTP_200_OK)
 async def get_user(id: int, db: Session = Depends(get_db)):
     return await services.get_user(id, db)
 

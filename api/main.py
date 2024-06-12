@@ -1,9 +1,11 @@
 from pathlib import Path
 from fastapi import FastAPI, Request, Response, Header, status, HTTPException
+from starlette.middleware.authentication import AuthenticationMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn, zipfile, io, os, ffmpeg
+from core.security import JWTAuth, get_current_user
 
 from auth import router as auth_router
 from user import router as user_router
@@ -450,6 +452,9 @@ async def playlist_root(
         )
     
     return result
+
+
+app.add_middleware(AuthenticationMiddleware, backend=JWTAuth())
        
     
 if __name__ == '__main__':

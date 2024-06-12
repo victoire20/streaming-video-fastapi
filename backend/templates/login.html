@@ -10,8 +10,12 @@ dashboard, backoffice
 
 {% block content %}
 <style>
-    #alert-msg {
+    #alert-error-msg {
         color: #b70e1d !important;
+    }
+
+    #alert-success-msg {
+        color: green !important;
     }
 
     .spinner {
@@ -43,8 +47,12 @@ dashboard, backoffice
                             <img src="{{ url_for('static', path='/img/logo.svg') }}" alt="">
                         </a>
                         
-                        <div id="alert-msg" class="alert alert-danger mb-2" role="alert">
+                        <div id="alert-error-msg" class="alert alert-danger mb-2" role="alert">
                             {% if error_message %}{{ error_message }}{% endif %}
+                        </div>
+                        
+                        <div id="alert-success-msg" class="alert alert-danger mb-2" role="alert">
+                            {% if success_message %}{{ success_message }}{% endif %}
                         </div>
 
                         <div class="sign__group">
@@ -76,11 +84,11 @@ dashboard, backoffice
 
 
 <script>
-    function setCookie(name, value, days) {
+    function setCookie(name, value, seconds) {
         var expires = "";
-        if (days) {
+        if (seconds) {
             var date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            date.setTime(date.getTime() + (seconds * 1000));
             expires = "; expires=" + date.toUTCString();
         }
         document.cookie = name + "=" + (value || "") + expires + "; path=/";
@@ -128,11 +136,27 @@ dashboard, backoffice
                     $('.spinner').remove();
                 },
                 success: function(data) {
-                    setCookie("access_token", data.access_token, data.expires_in);
+                    $.ajax({
+                        url: 'http://127.0.0.1:8000/users/me',
+                        method: 'Get',
+                        headers: {
+                            'accept': 'application/json',
+                            'Authorization': 'Bearer ' + data.access_token
+                        },
+                        success: function(item) {
+                            console.log(item);
+                            if(item.is_admin) {
+                                setCookie("access_token", data.access_token, data.expires_in);
+                                window.location.href = 'http://127.0.0.1:8002/'
+                            } else {
+                                $('#alert-error-msg').text('You are not authorized to access this interface.')
+                            }
+                        }
+                    })
                 },
                 error: function(errors) {
                     $('.spinner').remove();
-                    $('#alert-msg').text(errors.responseJSON.detail)
+                    $('#alert-error-msg').text(errors.responseJSON.detail)
                 }
             });
         }

@@ -10,7 +10,7 @@ from auth.responses import TokenResponse
 
 from datetime import datetime
 from email.message import EmailMessage
-import string, smtplib
+import string, smtplib, time
 
 
 settings = get_settings()
@@ -66,6 +66,8 @@ def _verify_user_access(user: User):
 async def get_token(data: dict, db: Session):
     user = db.query(User).filter(User.username == data.username).first()
     
+    time.sleep(2)
+    
     if not user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -112,7 +114,7 @@ async def get_refresh_token(token, db):
 
 
 async def _get_user_token(user: User, refresh_token = None):
-    payload = {"serial_number": user.id}
+    payload = {"id": user.id}
     
     access_token_expiry = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     
