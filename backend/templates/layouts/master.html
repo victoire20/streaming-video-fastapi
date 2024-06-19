@@ -16,11 +16,28 @@
 	<link rel="icon" type="image/png" href="{{ url_for('static', path='/icon/favicon-32x32.png') }}" sizes="32x32">
 	<link rel="apple-touch-icon" href="{{ url_for('static', path='/icon/favicon-32x32.png') }}">
 
+	<!-- DataTable CSS -->
+	<link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.dataTables.css">
+
 	<meta name="description" content="{% block description %}{% endblock %}">
     <meta name="keywords" content="{% block keywords %}{% endblock %}">
     <meta name="author" content="{% block author %}{% endblock %}">
 	<script src="{{ url_for('static', path='/js/jquery-3.5.1.min.js' )}}"></script>
 	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.11.1/dist/sweetalert2.min.css" rel="stylesheet">
+	<script src="{{ url_for('static', path='/js/main.js' )}}"></script>
+	<style>
+		.spinner {
+			border: 4px solid rgba(0, 0, 0, 0.1);
+			border-left-color: #000;
+			border-radius: 50%;
+			width: 16px;
+			height: 16px;
+			animation: spin 1s linear infinite;
+			display: inline-block;
+			margin-left: 10px;
+		}
+	</style>
 	<title>{% block title %}{% endblock %}</title>
 	{% endblock %}
 </head>
@@ -29,6 +46,11 @@
 	<!-- main content -->
 	{% block content %}{% endblock %}
 	<!-- end main content -->
+
+	<!-- DataTable JS -->
+	<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
+	<script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
+	<script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.dataTables.js"></script>
 
 	<!-- JS -->
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.11.1/dist/sweetalert2.all.min.js"></script>

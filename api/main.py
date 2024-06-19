@@ -7,6 +7,8 @@ from fastapi.responses import JSONResponse
 import uvicorn, zipfile, io, os, ffmpeg
 from core.security import JWTAuth, get_current_user
 
+from core.database import SessionLocal
+
 from auth import router as auth_router
 from user import router as user_router
 from genre import router as genre_router
@@ -32,6 +34,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware('http')
+async def db_session_middleware(request, call_next):
+    response = Response("Internal server error", status_code=500)
+    try:
+        request.state.db = SessionLocal()
+        response = await call_next(request)
+    finally:
+        request.state.db.close()
+    return response
 
 app.include_router(auth_router.router)
 app.include_router(user_router.router)

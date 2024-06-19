@@ -46,7 +46,7 @@ async def create_profil(request: dict, db: Session):
 
 
 def _verify_user_access(user: User):
-        
+     
     if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

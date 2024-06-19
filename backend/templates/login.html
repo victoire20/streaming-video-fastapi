@@ -17,17 +17,6 @@ dashboard, backoffice
     #alert-success-msg {
         color: green !important;
     }
-
-    .spinner {
-        border: 4px solid rgba(0, 0, 0, 0.1);
-        border-left-color: #000;
-        border-radius: 50%;
-        width: 16px;
-        height: 16px;
-        animation: spin 1s linear infinite;
-        display: inline-block;
-        margin-left: 10px;
-    }
     
     @keyframes spin {
         0% { transform: rotate(0deg); }
@@ -125,7 +114,7 @@ dashboard, backoffice
             var encodedFormData = $.param(formData);
     
             $.ajax({
-                url: 'http://127.0.0.1:8000/auth/token',
+                url: '/auth/token',
                 method: 'POST',
                 contentType: 'application/x-www-form-urlencoded',
                 data: encodedFormData,
@@ -137,7 +126,7 @@ dashboard, backoffice
                 },
                 success: function(data) {
                     $.ajax({
-                        url: 'http://127.0.0.1:8000/users/me',
+                        url: '/users/me',
                         method: 'Get',
                         headers: {
                             'accept': 'application/json',
