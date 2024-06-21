@@ -47,6 +47,31 @@
 	{% block content %}{% endblock %}
 	<!-- end main content -->
 
+	<script>
+		function setCookie(name, value, seconds) {
+			var expires = "";
+			if (seconds) {
+				var date = new Date();
+				date.setTime(date.getTime() + (seconds * 1000));
+				expires = "; expires=" + date.toUTCString();
+			}
+			document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+		}
+
+		function eraseCookie(name) {   
+			document.cookie = name + '=; Max-Age=-99999999; path=/';  
+		}
+
+		$('.sidebar__user-btn').on('click', function() {
+			eraseCookie('access_token');
+			setCookie('error_message', 'You are successfully logged out', 5);
+
+			setTimeout(function() {
+				window.location.href = '/login';
+			}, 100);
+		})
+	</script>
+
 	<!-- DataTable JS -->
 	<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
 	<script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>

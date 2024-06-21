@@ -128,7 +128,7 @@ async def index_root(request: Request, response: Response):
     )
 
 
-@app.get('/add-category')
+@app.get('/languages')
 async def index_root(request: Request, response: Response):
     if not request.cookies.get('access_token'):
         response.set_cookie(
@@ -140,8 +140,8 @@ async def index_root(request: Request, response: Response):
         )
         return RedirectResponse(url='/login', headers=response.headers)
     return templates.TemplateResponse(
-        'add-category.html', 
-        context={'request': request, 'page': 'categories'}
+        'language.html', 
+        context={'request': request, 'page': 'languages'}
     )
 
 
