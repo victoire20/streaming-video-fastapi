@@ -1,8 +1,6 @@
 from fastapi import HTTPException, status, Request
 from sqlalchemy import select, func, text, or_
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.elements import TextClause
-from sqlalchemy.orm.attributes import InstrumentedAttribute
 from typing import List, Optional
 
 from user import responses
@@ -51,7 +49,7 @@ async def get_users(
     else:
         selected_columns = default_columns
 
-    query = select(*selected_columns).select_from(User)
+    query = select(*selected_columns).filter(User.id != request.user.id).select_from(User)
 
     if filter and filter != "null":
         criteria = dict(x.split("*") for x in filter.split('-'))

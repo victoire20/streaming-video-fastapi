@@ -1,8 +1,8 @@
-from fastapi import APIRouter, status, Depends, Request, HTTPException, Header
+from fastapi import APIRouter, status, Depends, Request, HTTPException, Header, Form, File, UploadFile
 from sqlalchemy.orm import Session
 from core.database import get_db
 from movie import services, schemas
-from typing import Optional
+from typing import Optional, List
 
 
 router = APIRouter(
@@ -13,13 +13,53 @@ router = APIRouter(
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-async def create_movie(request: schemas.Movie, db: Session = Depends(get_db)):
-    return await services.create_movie(request, db)
+async def create_movie(
+    genreId: List[int] = Form(...),
+    langueId: int = Form(...),
+    title: str = Form(...),
+    cover_image: UploadFile = Form(...),
+    description: Optional[str] = Form(None),
+    release_year: Optional[str] = Form(None),
+    running_time: Optional[str] = Form(None),
+    age_limit: Optional[str] = Form(None),
+    zip_file: UploadFile = Form(...),
+    movie_type: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    return await services.create_movie(
+        genreId=genreId,
+        langueId=langueId,
+        title=title,
+        cover_image=cover_image,
+        description=description,
+        release_year=release_year,
+        running_time=running_time,
+        age_limit=age_limit,
+        zip_file=zip_file,
+        movie_type=movie_type, 
+        db=db
+    )
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def get_movies(db: Session = Depends(get_db)):
-    return await services.get_movies(db)
+async def get_movies(
+    request: Request,
+    page: int = Header(1),
+    limit: int = Header(10, gt=0, le=100),
+    columns: str = Header(None, alias="columns"),
+    sort: str = Header(None, alias='sort'),
+    filter: str = Header(None, alias='filter'),
+    db: Session = Depends(get_db)
+):
+    return await services.get_movies(
+        request=request, 
+        page=page, 
+        limit=limit, 
+        columns=columns, 
+        sort=sort, 
+        filter=filter, 
+        db=db
+    )
 
 
 @router.get('/{id}/', status_code=status.HTTP_200_OK)
@@ -27,9 +67,9 @@ async def get_movie(id: int, db: Session = Depends(get_db)):
     return await services.get_movie(id, db)
 
 
-@router.put('/{id}/', status_code=status.HTTP_200_OK)
-async def update_movie(id: int, request: schemas.Movie, db: Session = Depends(get_db)):
-    return await services.update_movie(id, request, db)
+# @router.put('/{id}/', status_code=status.HTTP_200_OK)
+# async def update_movie(id: int, request: schemas.Movie, db: Session = Depends(get_db)):
+#     return await services.update_movie(id, request, db)
 
 
 @router.get('/{id}/activate/', status_code=status.HTTP_200_OK)

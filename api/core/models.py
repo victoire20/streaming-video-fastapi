@@ -65,7 +65,7 @@ class Movie(Base):
     zip_file = Column(String(200))
     rate = Column(Float, nullable=True, default=0)
     views = Column(Integer, nullable=True, default=0)
-    is_active = Column(Boolean, default=True)
+    is_active = Column(String(7), default='running') # running, close
     
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(DateTime, nullable=True, default=None, onupdate=datetime.now)
