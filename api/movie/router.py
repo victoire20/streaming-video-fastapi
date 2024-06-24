@@ -1,7 +1,8 @@
 from fastapi import APIRouter, status, Depends, Request, HTTPException, Header, Form, File, UploadFile
+from fastapi import BackgroundTasks
 from sqlalchemy.orm import Session
 from core.database import get_db
-from movie import services, schemas
+from movie import services, schemas, responses
 from typing import Optional, List
 
 
@@ -14,6 +15,7 @@ router = APIRouter(
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_movie(
+    background: BackgroundTasks,
     genreId: List[int] = Form(...),
     langueId: int = Form(...),
     title: str = Form(...),
@@ -22,8 +24,10 @@ async def create_movie(
     release_year: Optional[str] = Form(None),
     running_time: Optional[str] = Form(None),
     age_limit: Optional[str] = Form(None),
+    gallery: Optional[List[UploadFile]] = File(None),
     zip_file: UploadFile = Form(...),
     movie_type: str = Form(...),
+    meta_keywords: str = Form(...),
     db: Session = Depends(get_db)
 ):
     return await services.create_movie(
@@ -35,8 +39,11 @@ async def create_movie(
         release_year=release_year,
         running_time=running_time,
         age_limit=age_limit,
+        gallery=gallery,
         zip_file=zip_file,
         movie_type=movie_type, 
+        meta_keywords=meta_keywords,
+        background=background,
         db=db
     )
 
@@ -62,7 +69,7 @@ async def get_movies(
     )
 
 
-@router.get('/{id}/', status_code=status.HTTP_200_OK)
+@router.get('/{id}/', response_model=responses.MovieResponse, status_code=status.HTTP_200_OK)
 async def get_movie(id: int, db: Session = Depends(get_db)):
     return await services.get_movie(id, db)
 

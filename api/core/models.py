@@ -57,6 +57,7 @@ class Movie(Base):
     langueId = Column(Integer, ForeignKey('languages.id', ondelete="CASCADE", onupdate="CASCADE"))
     title = Column(String(200))
     cover_image = Column(String(300), nullable=True, default=None)
+    meta_keywords = Column(String(500), nullable=True, default=None)
     description = Column(String(300), nullable=True, default=None)
     release_year = Column(String(4), nullable=True, default=None)
     running_time = Column(String(12), nullable=True, default=None)

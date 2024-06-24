@@ -105,6 +105,13 @@ dashboard, backoffice
                                     <div class="form__gallery">
                                         <label id="gallery1" for="form__gallery-upload">Upload photo Slide</label>
                                         <input data-name="#gallery1" id="form__gallery-upload" name="gallery" class="form__gallery-upload" type="file" accept=".png, .jpg, .jpeg">
+                                        <span id="error-gallery" style="color: red; font-size: small;"></span>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form__group">
+                                        <input type="text" name="meta_keywords" id="meta_keywords" class="form__input" placeholder="Keywords">
+                                        <span id="error-meta_keywords" style="color: red; font-size: small;"></span>
                                     </div>
                                 </div>
                             </div>
@@ -252,19 +259,16 @@ dashboard, backoffice
         var genreIdValues = selectedValues.map(function(value) {
             return parseInt(value, 10);
         });
-        console.log(genreIdValues);
 
         genreIdValues.forEach(function(value) {
             if (!isNaN(value)) {
                 formData.append('genreId', value);
-            } else {
-                console.log("Erreur : La valeur n'est pas un entier valide.");
             }
         });
 
         const errorFields = [
-            'genreId', 'langueId', 'title', 'cover_image', 'description', 
-            'release_year', 'running_time', 'age_limit', 'zip_file', 'movie_type', 'status'
+            'genreId', 'langueId', 'title', 'cover_image', 'description', 'meta_keywords',
+            'release_year', 'running_time', 'age_limit', 'zip_file', 'movie_type', 'status', 'gallery'
         ];
 
         const resetErrors = () => {
@@ -293,9 +297,11 @@ dashboard, backoffice
             contentType: false,
             data: formData,
             beforeSend: function() {
+                $('#btn-add').prop('disabled', true);
                 $('#btn-add').append('<div class="spinner"></div>');
             },
             complete: function() {
+                $('#btn-add').prop('disabled', false);
                 $('.spinner').remove();
             },
             success: function(data) {
@@ -309,6 +315,7 @@ dashboard, backoffice
                 })
             },
             error: function(errors) {
+                $('#btn-add').prop('disabled', false);
                 $('.spinner').remove();
                 resetErrors();
                 if (errors.status === 422) {

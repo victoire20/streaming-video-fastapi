@@ -1,14 +1,16 @@
-from fastapi import HTTPException, status, UploadFile, Request
+from fastapi import HTTPException, status, UploadFile, Request, BackgroundTasks
 from sqlalchemy import select, func, text, or_, and_
 from sqlalchemy.orm import Session
 from typing import List, Optional
-import os, time, math
+from PIL import Image
+import io, os, time, math, aiofiles, py7zr
 
 from core.models import Movie, GenreMovie, Genre, Langue, Comment, DownloadLink
 from movie import responses
 
 
 BASE_MEDIA_URL = "./media"
+CHUNK_SIZE = 1024 * 1024 # 1 MB chunks, adjust as needed
 
 
 # Fonction pour convertir le tri
@@ -21,6 +23,30 @@ def convert_columns(columns: str) -> List:
     return list(map(lambda x: getattr(Movie, x), columns.split('-')))
 
 
+def get_image_dimensions(image_data: bytes):
+    with Image.open(io.BytesIO(image_data)) as img:
+        width, height = img.size
+        return width, height
+
+
+async def save_large_file(zip_file: UploadFile, zip_filename: str, base_media_url: str):
+    zip_file_path = os.path.join(base_media_url, 'videos', zip_filename)
+    os.makedirs(os.path.dirname(zip_file_path), exist_ok=True)
+    
+    async with aiofiles.open(zip_file_path, 'wb') as f:
+        while True:
+            chunk = await zip_file.read(CHUNK_SIZE)
+            if not chunk:
+                break
+            await f.write(chunk)
+            
+    if not os.path.isfile(zip_file_path):
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='Failed to save videos file.'
+        )
+
+
 async def create_movie(
     genreId: List[int],
     langueId: int,
@@ -29,11 +55,15 @@ async def create_movie(
     zip_file: UploadFile,
     movie_type: str,
     db: Session,
+    background: BackgroundTasks,
+    gallery: Optional[List[UploadFile]] = None,
     description: Optional[str] = None,
     release_year: Optional[str] = None,
     running_time: Optional[str] = None,
-    age_limit: Optional[str] = None
+    age_limit: Optional[str] = None,
+    meta_keywords: Optional[str] = None
 ) -> str:
+    timestamp = int(time.time())
     movie = (
         db.query(Movie)
         .filter(func.lower(Movie.title) == title.lower(), Movie.langueId == langueId)
@@ -45,11 +75,12 @@ async def create_movie(
             detail='This movie already exists.'
         )
 
-    if not db.query(Genre).filter(Genre.id == genreId).first():
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="This genre doesn't exist."
-        )
+    for genre_id in genreId:
+        if not db.query(Genre).filter(Genre.id == genre_id).first():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="This genre doesn't exist."
+            )
 
     if not db.query(Langue).filter(Langue.id == langueId).first():
         raise HTTPException(
@@ -63,12 +94,19 @@ async def create_movie(
             detail='The only two types allowed are serie or film.'
         )
 
-    # Vérification de la taille de l'image de couverture
+    # Vérification de la taille de l'image de couverture 1Mo
     if cover_image.size > 1 * 1024 * 1024:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Cover image size should not exceed 1MB.'
         )
+        
+    # Lire le contenu de l'image en mémoire
+    cover_image_content = await cover_image.read()
+
+    # Lire et redimenssionner l'image
+    new_image = Image.open(io.BytesIO(cover_image_content))
+    new_image = new_image.resize((190, 270))
 
     cover_image_extension = cover_image.content_type.split('/')[1]
     if cover_image_extension not in ['jpeg', 'jpg']:
@@ -78,15 +116,13 @@ async def create_movie(
         )
 
     # Création du nom de fichier pour l'image de couverture basé sur le timestamp
-    timestamp = int(time.time())
     cover_image_filename = f'{timestamp}.{cover_image_extension}'
 
     # Chemin d'accès pour sauvegarder l'image de couverture
     cover_image_path = os.path.join(BASE_MEDIA_URL, 'images', cover_image_filename)
 
     # Sauvegarde de l'image de couverture
-    with open(cover_image_path, 'wb') as f:
-        f.write(cover_image.file.read())
+    new_image.save(cover_image_path)
 
     # Vérification si l'image de couverture a bien été sauvegardée
     if not os.path.isfile(cover_image_path):
@@ -94,15 +130,25 @@ async def create_movie(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail='Failed to save cover image.'
         )
+        
+    if gallery:
+        for img_gallery in gallery:
+            contents = await img_gallery.read()
+            width, heaght = get_image_dimensions(contents)
+            if width < 100:
+                raise
+            
+            if heaght < 100:
+                raise
+        
+            # Redimentionner la taille des image de la gallérie
 
-    # Vérification de la liste de vidéos
     if not zip_file:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='No videos provided.'
         )
 
-    # Vérification de l'extension des vidéos
     if not (zip_file.filename.endswith('.zip') or zip_file.filename.endswith('.rar')):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -113,32 +159,27 @@ async def create_movie(
         zip_filename = f'{timestamp}.zip'
     else:
         zip_filename = f'{timestamp}.rar'
-
-    zip_file_path = os.path.join(BASE_MEDIA_URL, 'videos', zip_filename)
-    os.makedirs(os.path.dirname(zip_file_path), exist_ok=True)
-    with open(zip_file_path, 'wb') as f:
-        f.write(zip_file.file.read())
+    
+    background.add_task(await save_large_file(zip_file, zip_filename, BASE_MEDIA_URL))
         
     new_movie = Movie(
         langueId=langueId,
         title=title,
-        cover_image=cover_image_path,
+        cover_image=cover_image_filename,
         description=description,
         release_year=release_year,
         running_time=running_time,
         age_limit=age_limit,
         movie_type=movie_type,
-        zip_file=zip_file_path,
+        zip_file=zip_filename,
+        meta_keywords=meta_keywords
     )
     db.add(new_movie)
     db.commit()
     db.refresh(new_movie)
 
     for genre_id in genreId:
-        new_genre_movie = GenreMovie(
-            genreId=genre_id,
-            movieId=new_movie.id
-        )
+        new_genre_movie = GenreMovie(genreId=genre_id, movieId=new_movie.id)
         db.add(new_genre_movie)
         db.commit()
 

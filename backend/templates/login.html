@@ -133,7 +133,6 @@ dashboard, backoffice
                             'Authorization': 'Bearer ' + data.access_token
                         },
                         success: function(item) {
-                            console.log(item);
                             if(item.is_admin) {
                                 setCookie("access_token", data.access_token, data.expires_in);
                                 window.location.href = 'http://127.0.0.1:8002/'
