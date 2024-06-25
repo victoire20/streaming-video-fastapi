@@ -11,7 +11,6 @@ templates = Jinja2Templates(directory="templates")
 
 
 async def verify_cookies(request, response):
-    print(request.cookies.get('access_token'))
     if not request.cookies.get('access_token'):
         response.set_cookie(
             key='error_message', 
@@ -159,6 +158,23 @@ async def index_root(request: Request, response: Response):
     return templates.TemplateResponse(
         'movies.html', 
         context={'request': request, 'page': 'movies'}
+    )
+    
+    
+@app.get('/{id}/movies')
+async def index_root(id: int, request: Request, response: Response):
+    if not request.cookies.get('access_token'):
+        response.set_cookie(
+            key='error_message', 
+            value='Your session has expired! Please log in again!', 
+            httponly=True,
+            expires=2,  # 2 secondes
+            max_age=2  # 2 secondes
+        )
+        return RedirectResponse(url='/login', headers=response.headers)
+    return templates.TemplateResponse(
+        'movie.html', 
+        context={'request': request, 'page': 'movies', 'id': id}
     )
 
 

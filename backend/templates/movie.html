@@ -1,0 +1,759 @@
+{% extends 'layouts/master.html' %}
+{% block description %}
+Back office du site
+{% endblock %}
+{% block keywords %}
+dashboard, backoffice
+{% endblock %}
+{% block author%}TI-GENERATION{% endblock %}
+{% block title %}ZoneAnimee | Dashboard{% endblock %}
+
+
+<!-- header -->
+{% include 'layouts/header.html' %}
+<!-- end header -->
+
+<!-- sidebar -->
+{% include 'layouts/sidebar.html' %}
+<!-- end sidebar -->
+{% block content %}
+
+<!-- OPlayer -->
+<script src="https://cdn.jsdelivr.net/npm/@oplayer/plugins@latest/dist/playlist.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@oplayer/core@latest/dist/index.ui.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@oplayer/full@latest/dist/index.min.js"></script>
+
+<main class="main">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- main title -->
+            <div class="col-12">
+                <div class="main__title">
+                    <h2 class="title"></h2>
+                </div>
+            </div>
+            <!-- end main title -->
+            
+            <!-- profile -->
+            <div class="col-12">
+                <div class="profile__content">
+                    <!-- profile user -->
+                    <div class="profile__user">
+                        <div class="profile__avatar">
+                            <img src="{{ url_for('static', path='/img/user.svg') }}" alt="">
+                        </div>
+                        <!-- or red -->
+                        <div class="profile__meta profile__meta--green">
+                            <h3 id="username-label"></h3>
+                            <span id="first-connexion"></span>
+                            <span id="last-connexion"></span>
+                        </div>
+                    </div>
+                    <!-- end profile user -->
+
+                    <!-- profile tabs nav -->
+                    <ul class="nav nav-tabs profile__tabs" id="profile__tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#tab-1" role="tab" aria-controls="tab-1" aria-selected="true">Details</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#tab-2" role="tab" aria-controls="tab-2" aria-selected="false">Comments</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#tab-3" role="tab" aria-controls="tab-3" aria-selected="false">Download Links</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#tab-4" role="tab" aria-controls="tab-4" aria-selected="false">Slides</a>
+                        </li>
+                    </ul>
+                    <!-- end profile tabs nav -->
+
+                    <!-- profile mobile tabs nav -->
+                    <div class="profile__mobile-tabs" id="profile__mobile-tabs">
+                        <div class="profile__mobile-tabs-btn dropdown-toggle" role="navigation" id="mobile-tabs" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <input type="button" value="Profile">
+                            <span></span>
+                        </div>
+
+                        <div class="profile__mobile-tabs-menu dropdown-menu" aria-labelledby="mobile-tabs">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item"><a class="nav-link active" id="1-tab" data-toggle="tab" href="#tab-1" role="tab" aria-controls="tab-1" aria-selected="true">Profile</a></li>
+
+                                <li class="nav-item"><a class="nav-link" id="2-tab" data-toggle="tab" href="#tab-2" role="tab" aria-controls="tab-2" aria-selected="false">Comments</a></li>
+
+                                <li class="nav-item"><a class="nav-link" id="3-tab" data-toggle="tab" href="#tab-3" role="tab" aria-controls="tab-3" aria-selected="false">Reviews</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- end profile mobile tabs nav -->
+
+                    <!-- profile btns -->
+                    <div class="profile__actions">
+                        <a href="#modal-status" onclick="closedMovie({{ id }})" class="profile__action profile__action--banned open-modal" id="btn-close">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M12,13a1.49,1.49,0,0,0-1,2.61V17a1,1,0,0,0,2,0V15.61A1.49,1.49,0,0,0,12,13Zm5-4V7A5,5,0,0,0,7,7V9a3,3,0,0,0-3,3v7a3,3,0,0,0,3,3H17a3,3,0,0,0,3-3V12A3,3,0,0,0,17,9ZM9,7a3,3,0,0,1,6,0V9H9Zm9,12a1,1,0,0,1-1,1H7a1,1,0,0,1-1-1V12a1,1,0,0,1,1-1H17a1,1,0,0,1,1,1Z"/></svg>
+                            </a>
+                        <a href="#modal-delete" onclick="deleteMovie({{ id }})" class="profile__action profile__action--delete open-modal" id="btn-delte">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M10,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,10,18ZM20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,4,8H5V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V8h1a1,1,0,0,0,0-2ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10Zm7,14a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1V8H17Zm-3-1a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,14,18Z"/></svg>
+                            </a>
+                    </div>
+                    <!-- end profile btns -->
+                </div>
+            </div>
+            <!-- end profile -->
+
+            <!-- content tabs -->
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade active show" id="tab-1" role="tabpanel" aria-labelledby="1-tab">
+                    <div class="col-12">
+                        <div class="sign_wrap">
+                            <div class="row">
+                                <!-- player start -->
+                                <div class="col-12 col-lg-6">
+                                    <div class="anime__video__player" style="margin-bottom: 20px !important;"></div>
+                                </div>
+                                <!-- player end -->
+                                <!-- details start -->
+                                <div class="col-12 col-lg-6">
+                                    <h4 class="sign__title" style="font-size: 24px !important;">
+                                        Titre : <span class="title"></span>
+                                    </h4>
+                                    <div class="sign__group">
+                                        <label class="sign__label">Description : </label>
+                                        <p class="sign__label description"></p>
+                                    </div>
+                                    <div class="sign__group" style="margin-bottom: 0px !important;">
+                                        <label class="sign__label">
+                                            Number of episodes : <span class="nbr_eps"></span>
+                                        </label>
+                                    </div>
+                                    <div class="sign__group" style="margin-bottom: 0px !important;">
+                                        <label class="sign__label">
+                                            Release Year : <span class="year"></span>
+                                        </label>
+                                    </div>
+                                    <div class="sign__group" style="margin-bottom: 0px !important;">
+                                        <label class="sign__label">
+                                            Running Time : <span class="running_time"></span>
+                                        </label>
+                                    </div>
+                                    <div class="sign__group" style="margin-bottom: 0px !important;">
+                                        <label class="sign__label">
+                                            Type : <span class="movie_type"></span>
+                                        </label>
+                                    </div>
+                                    <div class="sign__group" style="margin-bottom: 0px !important;">
+                                        <label class="sign__label">
+                                            Limit Age : <span class="age"></span>
+                                        </label>
+                                    </div>
+                                    <div class="sign__group" style="margin-bottom: 0px !important;">
+                                        <label class="sign__label">
+                                            Rate : 
+                                            <svg style="width: 20px; fill: rgb(255, 226, 4)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22,9.67A1,1,0,0,0,21.14,9l-5.69-.83L12.9,3a1,1,0,0,0-1.8,0L8.55,8.16,2.86,9a1,1,0,0,0-.81.68,1,1,0,0,0,.25,1l4.13,4-1,5.68A1,1,0,0,0,6.9,21.44L12,18.77l5.1,2.67a.93.93,0,0,0,.46.12,1,1,0,0,0,.59-.19,1,1,0,0,0,.4-1l-1-5.68,4.13-4A1,1,0,0,0,22,9.67Zm-6.15,4a1,1,0,0,0-.29.88l.72,4.2-3.76-2a1.06,1.06,0,0,0-.94,0l-3.76,2,.72-4.2a1,1,0,0,0-.29-.88l-3-3,4.21-.61a1,1,0,0,0,.76-.55L12,5.7l1.88,3.82a1,1,0,0,0,.76.55l4.21.61Z"></path></svg>
+                                            <span class="rate"></span>
+                                        </label>
+                                    </div>
+                                    <div class="sign__group" style="margin-bottom: 0px !important;">
+                                        <label class="sign__label">
+                                            Views : <span class="views"></span>
+                                        </label>
+                                    </div>
+                                    <div class="sign__group" style="margin-bottom: 0px !important;">
+                                        <label class="sign__label">
+                                            Status : <span style="display: none; color: green;" class="r_status"></span><span style="display: none; color: red;" class="c_status"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- details end -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="tab-2" role="tabpanel" aria-labelledby="2-tab">
+                    <div class="col-12">
+                        <div class="main__table-wrap">
+                            <table class="main__table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>ITEM</th>
+                                        <th>AUTHOR</th>
+                                        <th>TEXT</th>
+                                        <th>LIKE / DISLIKE</th>
+                                        <th>CRAETED DATE</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="main__table-text">23</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-text"><a href="#">I Dream in Another Language</a></div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-text">John Doe</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-text">Lorem Ipsum is simply dummy text...</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-text">12 / 7</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-text">24 Oct 2021</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-btns">
+                                                <a href="#modal-view" class="main__table-btn main__table-btn--view open-modal">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z"/></svg>
+                                                </a>
+                                                <a href="#modal-delete" class="main__table-btn main__table-btn--delete open-modal">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,10,18ZM20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,4,8H5V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V8h1a1,1,0,0,0,0-2ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10Zm7,14a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1V8H17Zm-3-1a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,14,18Z"/></svg>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="tab-3" role="tabpanel" aria-labelledby="3-tab">
+                    <div class="col-12 mb-4">
+                        <div class="main__title-wrap">
+                            <a href="#modal-download-link" class="main__title-link" id="btn-link-add">
+                                add Comment
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="main__table-wrap">
+                            <table class="main__table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>ITEM</th>
+                                        <th>AUTHOR</th>
+                                        <th>TEXT</th>
+                                        <th>LIKE / DISLIKE</th>
+                                        <th>CRAETED DATE</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="main__table-text">23</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-text"><a href="#">I Dream in Another Language</a></div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-text">John Doe</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-text">Lorem Ipsum is simply dummy text...</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-text">12 / 7</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-text">24 Oct 2021</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-btns">
+                                                <a href="#modal-view" class="main__table-btn main__table-btn--view open-modal">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z"/></svg>
+                                                </a>
+                                                <a href="#modal-delete" class="main__table-btn main__table-btn--delete open-modal">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,10,18ZM20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,4,8H5V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V8h1a1,1,0,0,0,0-2ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10Zm7,14a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1V8H17Zm-3-1a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,14,18Z"/></svg>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="tab-4" role="tabpanel" aria-labelledby="4-tab">
+                    <div class="col-12 mb-4">
+                        <div class="main__title-wrap">
+                            <a href="#modal-slide" class="main__title-link" id="btn-slide-add">
+                                add Slide
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="main__table-wrap">
+                            <table class="main__table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>ITEM</th>
+                                        <th>AUTHOR</th>
+                                        <th>TEXT</th>
+                                        <th>LIKE / DISLIKE</th>
+                                        <th>CRAETED DATE</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="main__table-text">23</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__user">
+                                                <div class="main__avatar">
+                                                    <img src="/static/img/user.svg" alt="">
+                                                </div>
+                                                <div class="main__meta">
+                                                    <h3>John Doe</h3>
+                                                    <span>email@email.com</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-text">John Doe</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-text">Lorem Ipsum is simply dummy text...</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-text">12 / 7</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-text">24 Oct 2021</div>
+                                        </td>
+                                        <td>
+                                            <div class="main__table-btns">
+                                                <a href="#modal-view" class="main__table-btn main__table-btn--view open-modal">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z"/></svg>
+                                                </a>
+                                                <a href="#modal-delete" class="main__table-btn main__table-btn--delete open-modal">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,10,18ZM20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,4,8H5V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V8h1a1,1,0,0,0,0-2ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10Zm7,14a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1V8H17Zm-3-1a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,14,18Z"/></svg>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- paginator -->
+						<div class="col-12">
+							<div class="paginator">
+								<span class="paginator__pages">10 from 38</span>
+
+								<ul class="paginator__paginator">
+									<li>
+										<a href="#">
+											<svg width="14" height="11" viewBox="0 0 14 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.75 5.36475L13.1992 5.36475" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5.771 10.1271L0.749878 5.36496L5.771 0.602051" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+										</a>
+									</li>
+									<li class="active"><a href="#">1</a></li>
+									<li><a href="#">2</a></li>
+									<li><a href="#">3</a></li>
+									<li><a href="#">4</a></li>
+									<li>
+										<a href="#">
+											<svg width="14" height="11" viewBox="0 0 14 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.1992 5.3645L0.75 5.3645" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8.17822 0.602051L13.1993 5.36417L8.17822 10.1271" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<!-- end paginator -->
+                </div>
+            </div>
+            <!-- end conten tabs-->
+        </div>
+    </div>
+</main>
+
+
+<!-- modal download links -->
+<div id="modal-download-link" class="zoom-anim-dialog mfp-hide modal">
+    <h6 class="modal__title">Add Download Link</h6>
+    
+    <div class="modal__body">
+        <form id="form">
+            <input type="hidden" id="linkId">
+            <div class="sign__group">
+                <label class="sign__label" for="advertisement">Advertisement</label>
+                <input id="advertisement" type="text" name="advertisement" class="sign__input">
+                <span id="error-advertisement" style="color: red; font-size: small;"></span>
+            </div>
+            <div class="sign__group">
+                <label class="sign__label" for="link">Link</label>
+                <input id="link" type="text" name="link" class="sign__input">
+                <span id="error-link" style="color: red; font-size: small;"></span>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal__btns">
+        <button class="modal__btn modal__btn--dismiss" type="button">Dismiss</button>
+        <button class="modal__btn modal__btn--apply" type="button" id="btnAddLink">Delete</button>
+    </div>
+</div>
+<!-- end modal download links -->
+
+
+<!-- modal slides -->
+<div id="modal-slide" class="zoom-anim-dialog mfp-hide modal">
+    <h6 class="modal__title">Add Slide</h6>
+    
+    <div class="modal__body">
+        <form id="form">
+            <input type="hidden" id="slideId">
+            <div class="form__gallery">
+                <label id="gallery1" for="form__gallery-upload">Upload photos Slide</label>
+                <input data-name="#gallery1" id="form__gallery-upload" name="gallery[]" class="form__gallery-upload" type="file" accept=".png, .jpg, .jpeg" multiple="">
+                <span id="error-gallery" style="color: red; font-size: small;"></span>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal__btns">
+        <button class="modal__btn modal__btn--dismiss" type="button">Dismiss</button>
+        <button class="modal__btn modal__btn--apply" type="button" id="btnAddSlide">Delete</button>
+    </div>
+</div>
+<!-- end modal slides -->
+
+
+<!-- modal delete -->
+<div id="modal-delete" class="zoom-anim-dialog mfp-hide modal">
+    <h6 class="modal__title">Review delete</h6>
+    <input type="hidden" id="idDel">
+    <p class="modal__text">Are you sure to permanently delete this review?</p>
+
+    <div class="modal__btns">
+        <button class="modal__btn modal__btn--dismiss" type="button">Dismiss</button>
+        <button class="modal__btn modal__btn--apply" type="button" id="btnDelete">Delete</button>
+    </div>
+</div>
+<!-- end modal delete -->
+
+<!-- modal status -->
+<div id="modal-status" class="zoom-anim-dialog mfp-hide modal">
+    <h6 class="modal__title">Status change</h6>
+    <input type="hidden" id="idClose">
+    <p class="modal__text">Are you sure about immediately change status?</p>
+
+    <div class="modal__btns">
+        <button class="modal__btn modal__btn--dismiss" type="button">Dismiss</button>
+        <button class="modal__btn modal__btn--apply" type="button" id="btnClose">Apply</button>
+    </div>
+</div>
+<!-- end modal status -->
+
+
+<script>
+    $(function() {
+        var source_playlist = [];
+        var video_index = 0;
+    
+        fetchAllEps().then(function(source_playlist) {
+            OPlayer.make('.anime__video__player', {
+                //source: {
+                //src: '/video/video/video',
+                //format: 'auto',
+                //poster: 'https://cdn.jsdelivr.net/gh/shiyiya/QI-ABSL@master/o/poster.png'
+                //}
+            })
+            .use([
+                OUI(),
+                OHls({
+                    forceHLS: true,
+                    library: 'https://cdn.jsdelivr.net/npm/hls.js@0.14.17/dist/hls.min.js'
+                }),
+                new OPlaylist({
+                    initialIndex: video_index,
+                    autoNext: true,
+                    sources: source_playlist
+                }),
+                ODash({ library: 'https://cdn.dashjs.org/latest/dash.all.min.js' }),
+                OMpegts({ library: 'https://cdn.jsdelivr.net/npm/mpegts.js@latest/dist/mpegts.min.js' }),
+            ])
+            .create();
+        }).catch(function(error) {
+            console.error("Failed to fetch episodes:", error);
+        });
+    })
+    
+    $('#btn-link-add').on('click', function(event) {
+        event.preventDefault();
+
+        $.magnificPopup.open({
+            items: {
+                src: '#modal-download-link'
+            },
+            type: 'inline',
+            fixedContentPos: true,
+            fixedBgPos: true,
+            overflowY: 'auto',
+            preloader: false,
+            focus: '#username',
+            modal: false,
+            removalDelay: 300,
+            mainClass: 'my-mfp-zoom-in',
+            closeBtnInside: true,
+            callbacks: {
+                open: function() {
+                    //$('#modal-add-title').text('Add Language');
+                    //$('#btn-save').css('display', 'initial');
+                    //$('#btn-update').css('display', 'none');
+                },
+                close: function() {
+                    //$('#form')[0].reset();
+                    //$('#error-libelle').text('');
+                }
+            }
+        });
+    });
+
+    $('#btn-slide-add').on('click', function(event) {
+        event.preventDefault();
+
+        $.magnificPopup.open({
+            items: {
+                src: '#modal-slide'
+            },
+            type: 'inline',
+            fixedContentPos: true,
+            fixedBgPos: true,
+            overflowY: 'auto',
+            preloader: false,
+            focus: '#username',
+            modal: false,
+            removalDelay: 300,
+            mainClass: 'my-mfp-zoom-in',
+            closeBtnInside: true,
+            callbacks: {
+                open: function() {
+                    
+                },
+                close: function() {
+                    //$('#form')[0].reset();
+                    //$('#error-libelle').text('');
+                }
+            }
+        });
+    });
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    function fetchAllEps() {
+        return new Promise(function(resolve, reject) {
+            $.get('/movies/{{ id }}/', (item) => {
+                $('.title').text(item.title)
+                $('.description').text(item.description)
+                $('.year').text(item.release_year)
+                $('.running_time').text(item.running_time)
+                $('.movie_type').text(item.movie_type)
+                $('.age').text(item.age_limit)
+                $('.rate').text(item.rate)
+                $('.views').text(item.views)
+                if(item.is_active == 'running') {
+                    $('.c_status').css('display', 'none')
+                    $('.r_status').css('display', 'initial')
+                    $('.r_status').text('Running')
+
+                    $('#btn-close').removeClass('profile__action profile__action--delete open-modal')
+                    $('#btn-close').addClass('profile__action profile__action--banned open-modal')
+                } else {
+                    $('.r_status').css('display', 'none')
+                    $('.c_status').css('display', 'initial')
+                    $('.c_status').text('Closed')
+
+                    $('#btn-close').removeClass('profile__action profile__action--banned open-modal')
+                    $('#btn-close').addClass('profile__action profile__action--delete open-modal')
+                }
+
+                $.ajax({
+                    url: `/videos`,
+                    method: 'GET',
+                    dataType: 'json',
+                    headers: {
+                        'video-name': item.zip_file
+                    },
+                    success: function(data) {
+                        var source_playlist = data.map(function(movie) {
+                            $('.nbr_eps').text(movie.nbr_episode)
+                            return {
+                                title: movie.name,
+                                src: 'http://127.0.0.1:8000/'+encodeURIComponent(movie.title)+'/'+encodeURIComponent(movie.name)+'/video',  // URL encodée
+                                format: 'auto',
+                                poster: 'http://127.0.0.1:8000/media/images/'+movie.poster,
+                                duration: movie.duration,
+                            };
+                        });
+                        resolve(source_playlist);
+                    },
+                    error: function(error) {
+                        reject(error);
+                    }
+                });
+            });
+        });
+    }
+
+    window.closedMovie = function(id) {
+        $.magnificPopup.open({
+            items: {
+                src: '#modal-status'
+            },
+            type: 'inline',
+            fixedContentPos: true,
+            fixedBgPos: true,
+            overflowY: 'auto',
+            preloader: false,
+            focus: '#username',
+            modal: false,
+            removalDelay: 300,
+            mainClass: 'my-mfp-zoom-in',
+            closeBtnInside: true,
+            callbacks: {
+                open: function() {
+                    if (!isNaN(id) && id != '') {
+                        $('#idClose').val(id)
+                    }
+                },
+                close: function() {
+                    $('#idClose').val();
+                }
+            }
+        });
+    }
+
+    window.deleteMovie = function(id) {
+        $.magnificPopup.open({
+            items: {
+                src: '#modal-delete'
+            },
+            type: 'inline',
+            fixedContentPos: true,
+            fixedBgPos: true,
+            overflowY: 'auto',
+            preloader: false,
+            focus: '#username',
+            modal: false,
+            removalDelay: 300,
+            mainClass: 'my-mfp-zoom-in',
+            closeBtnInside: true,
+            callbacks: {
+                open: function() {
+                    if (!isNaN(id) && id != '') {
+                        $('#idDel').val(id)
+                    }
+                },
+                close: function() {
+                    $('#idDel').val();
+                }
+            }
+        });
+    }
+
+    $('#btnClose').on('click', function(event) {
+        event.preventDefault()
+        access_token = getCookie('access_token')
+        var id = $('#idClose').val()
+
+        $.ajax({
+            url: `/movies/${id}/activate/`,
+            method: 'GET',
+            dataType: 'JSON',
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token,
+            },
+            success: function(data) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: data,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                $.magnificPopup.close()
+                fetchAllEps()
+            },
+            error: function(errors) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: errors.responseJSON.detail,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                $.magnificPopup.close()
+            }
+        })
+    })
+
+    $('#btnDelete').on('click', function(event) {
+        event.preventDefault()
+        access_token = getCookie('access_token')
+        var id = $('#idDel').val()
+
+        $.ajax({
+            url: `/movies/${id}/`,
+            method: 'DELETE',
+            dataType: 'JSON',
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token,
+            },
+            success: function(data) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: data,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                $.magnificPopup.close()
+                setTimeout(function() {
+                    window.location.href = 'http://127.0.0.1:8002/movies';
+                }, 1500);
+            },
+            error: function(errors) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: errors.responseJSON.detail,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                console.log(errors)
+            }
+        })
+    })
+</script>
+{% endblock %}

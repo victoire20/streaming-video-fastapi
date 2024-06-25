@@ -1,5 +1,6 @@
 from pathlib import Path
-from fastapi import FastAPI, Request, Response, Header, status, HTTPException
+from fastapi import FastAPI, Request, Response, Header, status, HTTPException, Depends
+from sqlalchemy.orm import Session
 from starlette.middleware.authentication import AuthenticationMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,7 +8,8 @@ from fastapi.responses import JSONResponse
 import uvicorn, zipfile, io, os, ffmpeg
 from core.security import JWTAuth, get_current_user
 
-from core.database import SessionLocal
+from core.database import SessionLocal, get_db
+from core.models import Movie
 
 from auth import router as auth_router
 from user import router as user_router
@@ -20,6 +22,7 @@ from typing import Optional
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory='static'), name="static")
+app.mount("/media", StaticFiles(directory='media'), name="media")
 
 origins = [
     'http://127.0.0.1:8000',
@@ -72,26 +75,33 @@ async def get_categories(request: Request):
     return categories
 
 
-@app.get('/{video_name}/videos')
+@app.get('/videos')
 async def read_all_video(
     request: Request,
-    video_name: str,
-    range: str = Header(None)
+    video_name: str = Header(...),
+    range: str = Header(None),
+    db: Session = Depends(get_db)
 ):
-    serie_name = f'media/videos/{video_name}.zip'
+    serie_name = f'media/videos/{video_name}'
     
     if not os.path.isfile(serie_name):
         return JSONResponse(content={"error": "Video not found"}, status_code=404)
     
     try:
+        movie = db.query(Movie).filter(Movie.zip_file == video_name).first()
+        
         with zipfile.ZipFile(serie_name, 'r') as listzip:
             file_list = listzip.namelist()
         
         results = []
         for result in file_list:
             results.append({
+                'title': video_name,
+                'poster': movie.cover_player,
+                'nbr_episode': len(file_list),
                 'name': result.split('.')[0].split('_')[0],
-                'duration': f"{result.split('.')[0].split('_')[1]}:{result.split('.')[0].split('_')[2]}"
+                # 'duration': f"{result.split('.')[0].split('_')[1]}:{result.split('.')[0].split('_')[2]}",
+                'duration': movie.running_time
             })
         return results
     except zipfile.BadZipFile:
@@ -109,7 +119,7 @@ async def read_zip_file(
     eps_name: str,
     range: str = Header(None)
 ):
-    serie_name = f'media/videos/{video_name}.zip'
+    serie_name = f'media/videos/{video_name}'
     
     if not os.path.isfile(serie_name):
         return JSONResponse(content={"error": "Video not found"}, status_code=404)

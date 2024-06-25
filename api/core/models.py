@@ -56,6 +56,7 @@ class Movie(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     langueId = Column(Integer, ForeignKey('languages.id', ondelete="CASCADE", onupdate="CASCADE"))
     title = Column(String(200))
+    cover_player = Column(String(300))
     cover_image = Column(String(300), nullable=True, default=None)
     meta_keywords = Column(String(500), nullable=True, default=None)
     description = Column(String(300), nullable=True, default=None)
@@ -76,6 +77,17 @@ class Movie(Base):
     download_links = relationship('DownloadLink', back_populates='movie')
     comments = relationship('Comment', back_populates='movie')
     favorites = relationship('Favorite', back_populates='movie')
+    slides = relationship('Slide', back_populates='movie')
+    
+    
+class Slide(Base):
+    __tablename__ = "slides"
+    
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    movieId = Column(Integer, ForeignKey('movies.id', ondelete="CASCADE", onupdate="CASCADE"))
+    img = Column(String(300))
+    
+    movie = relationship('Movie', back_populates='slides')
     
     
 class GenreMovie(Base):

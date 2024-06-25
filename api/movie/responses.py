@@ -45,6 +45,7 @@ class MovieResponse(BaseModel):
     title: str
     langue: Langue
     cover_image: Optional[str] = None
+    zip_file: Optional[str] = None
     meta_keywords: Optional[str] = None
     description: Optional[str] = None
     release_year: Optional[str] = None

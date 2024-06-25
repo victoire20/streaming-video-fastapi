@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,7 +19,6 @@
     <link rel="stylesheet" href="{{ url_for('static', path='/css/bootstrap.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/font-awesome.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/elegant-icons.css') }}" type="text/css">
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/plyr.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/nice-select.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/owl.carousel.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/slicknav.min.css') }}" type="text/css">
@@ -44,24 +42,23 @@
     {% block content %}{% endblock %}
     <!-- Content End -->
 
-<!-- Footer Section Begin -->
-{% include 'layouts/footer.html' %}
-<!-- Footer Section End -->
+    <!-- Footer Section Begin -->
+    {% include 'layouts/footer.html' %}
+    <!-- Footer Section End -->
 
-  <!-- Search model Begin -->
-  <div class="search-model">
-    <div class="h-100 d-flex align-items-center justify-content-center">
-        <div class="search-close-switch"><i class="icon_close"></i></div>
-        <form class="search-model-form">
-            <input type="text" id="search-input" placeholder="Search here.....">
-        </form>
+    <!-- Search model Begin -->
+    <div class="search-model">
+        <div class="h-100 d-flex align-items-center justify-content-center">
+            <div class="search-close-switch"><i class="icon_close"></i></div>
+            <form class="search-model-form">
+                <input type="text" id="search-input" placeholder="Search here.....">
+            </form>
+        </div>
     </div>
-</div>
-<!-- Search model end -->
+    <!-- Search model end -->
 
 <!-- Js Plugins -->
 <script src="{{ url_for('static', path='/js/bootstrap.min.js') }}"></script>
-<script src="{{ url_for('static', path='/js/player.js') }}"></script>
 <script src="{{ url_for('static', path='/js/jquery.nice-select.min.js') }}"></script>
 <script src="{{ url_for('static', path='/js/mixitup.min.js') }}"></script>
 <script src="{{ url_for('static', path='/js/jquery.slicknav.js') }}"></script>

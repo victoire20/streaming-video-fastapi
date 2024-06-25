@@ -101,10 +101,17 @@ dashboard, backoffice
                                     </div>
                                 </div>
 
-                                <div class="col-12">
+                                <div class="col-12 col-lg-6">
                                     <div class="form__gallery">
-                                        <label id="gallery1" for="form__gallery-upload">Upload photo Slide</label>
-                                        <input data-name="#gallery1" id="form__gallery-upload" name="gallery" class="form__gallery-upload" type="file" accept=".png, .jpg, .jpeg">
+                                        <label id="cover_player" for="form__cover-upload">Upload cover player</label>
+                                        <input data-name="#cover_player" id="form__cover-upload" name="cover_player" class="form__gallery-upload" type="file" accept=".png, .jpg, .jpeg">
+                                        <span id="error-cover_player" style="color: red; font-size: small;"></span>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-6">
+                                    <div class="form__gallery">
+                                        <label id="gallery1" for="form__gallery-upload">Upload photos Slide</label>
+                                        <input data-name="#gallery1" id="form__gallery-upload" name="gallery[]" class="form__gallery-upload" type="file" accept=".png, .jpg, .jpeg" multiple="">
                                         <span id="error-gallery" style="color: red; font-size: small;"></span>
                                     </div>
                                 </div>
@@ -260,6 +267,13 @@ dashboard, backoffice
             return parseInt(value, 10);
         });
 
+        var files = $('#form__gallery-upload')[0].files;
+        Array.from(files).forEach(function(file) {
+            if (file instanceof File) {
+                formData.append('gallery[]', file);
+            }
+        });
+        
         genreIdValues.forEach(function(value) {
             if (!isNaN(value)) {
                 formData.append('genreId', value);
@@ -267,7 +281,7 @@ dashboard, backoffice
         });
 
         const errorFields = [
-            'genreId', 'langueId', 'title', 'cover_image', 'description', 'meta_keywords',
+            'genreId', 'langueId', 'title', 'cover_image', 'description', 'meta_keywords', 'cover_player',
             'release_year', 'running_time', 'age_limit', 'zip_file', 'movie_type', 'status', 'gallery'
         ];
 
@@ -280,6 +294,7 @@ dashboard, backoffice
         const resetForm = () => {
             $('#form')[0].reset();
             $('#form__img').attr('src', '');
+            $('#cover_player').text('Upload cover player');
             $('#gallery1').text('Upload photo Slide');
             $('#movie1').text('Upload video File');
             $('#serie').attr('checked', true);

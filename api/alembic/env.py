@@ -22,6 +22,7 @@ from core.models import User
 from core.models import Genre
 from core.models import Langue
 from core.models import Movie
+from core.models import Slide
 from core.models import GenreMovie
 from core.models import DownloadLink
 from core.models import Comment

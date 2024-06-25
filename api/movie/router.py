@@ -16,6 +16,7 @@ router = APIRouter(
 @router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_movie(
     background: BackgroundTasks,
+    cover_player: UploadFile = Form(...),
     genreId: List[int] = Form(...),
     langueId: int = Form(...),
     title: str = Form(...),
@@ -31,6 +32,7 @@ async def create_movie(
     db: Session = Depends(get_db)
 ):
     return await services.create_movie(
+        cover_player=cover_player,
         genreId=genreId,
         langueId=langueId,
         title=title,

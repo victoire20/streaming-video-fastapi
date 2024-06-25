@@ -5,7 +5,7 @@ from typing import List, Optional
 from PIL import Image
 import io, os, time, math, aiofiles, py7zr
 
-from core.models import Movie, GenreMovie, Genre, Langue, Comment, DownloadLink
+from core.models import Movie, GenreMovie, Genre, Langue, Comment, DownloadLink, Slide
 from movie import responses
 
 
@@ -48,6 +48,7 @@ async def save_large_file(zip_file: UploadFile, zip_filename: str, base_media_ur
 
 
 async def create_movie(
+    cover_player: UploadFile,
     genreId: List[int],
     langueId: int,
     title: str,
@@ -74,6 +75,39 @@ async def create_movie(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='This movie already exists.'
         )
+        
+    if cover_player.size > 1 * 1024 * 1024:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Cover Player size should not exceed 1MB.'
+        )
+        
+    img_player = await cover_player.read()
+    p_width, p_height = get_image_dimensions(img_player)
+    if p_width < 1000:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Height of the player image must not be greater than 1000 px'
+        )
+    
+    if p_height < 500:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Height of the player image must not be greater than 624 px'
+        )
+    
+    new_p_image = Image.open(io.BytesIO(img_player))
+    new_p_image = new_p_image.resize((1110, 624))
+    
+    cover_p_extension = cover_player.content_type.split('/')[1]
+    if cover_p_extension not in ['jpeg', 'jpg']:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='Cover player type should be either jpeg or jpg.'
+        )
+        
+    cover_p_filename = f'{timestamp}_p.{cover_p_extension}'
+    cover_p_path = os.path.join(BASE_MEDIA_URL, 'images', cover_p_filename)
 
     for genre_id in genreId:
         if not db.query(Genre).filter(Genre.id == genre_id).first():
@@ -120,28 +154,40 @@ async def create_movie(
 
     # Chemin d'accès pour sauvegarder l'image de couverture
     cover_image_path = os.path.join(BASE_MEDIA_URL, 'images', cover_image_filename)
-
-    # Sauvegarde de l'image de couverture
-    new_image.save(cover_image_path)
-
-    # Vérification si l'image de couverture a bien été sauvegardée
-    if not os.path.isfile(cover_image_path):
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='Failed to save cover image.'
-        )
+    galery_filename = []
         
     if gallery:
         for img_gallery in gallery:
             contents = await img_gallery.read()
-            width, heaght = get_image_dimensions(contents)
-            if width < 100:
-                raise
+            width, height = get_image_dimensions(contents)
+            if width < 1000:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail='Width of the gallery image must not be greater than 1000 px'
+                )
             
-            if heaght < 100:
-                raise
-        
+            if height < 500:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail='Height of the gallery image must not be greater than 500 px'
+                )
+                
+        for img_gallery in gallery:
             # Redimentionner la taille des image de la gallérie
+            img_content = Image.open(io.BytesIO(contents))
+            img_content = img_content.resize((1172, 564))
+            
+            img_extension = img_gallery.content_type.split('/')[1]
+            if img_extension not in ['jpeg', 'jpg']:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail='Gallery images type should be either jpeg or jpg.'
+                )
+            img_filename = f'{timestamp}.{img_extension}' 
+            img_path = os.path.join(BASE_MEDIA_URL, 'slides', img_filename)
+            
+            img_content.save(img_path)
+            galery_filename.append(img_filename)
 
     if not zip_file:
         raise HTTPException(
@@ -161,8 +207,25 @@ async def create_movie(
         zip_filename = f'{timestamp}.rar'
     
     background.add_task(await save_large_file(zip_file, zip_filename, BASE_MEDIA_URL))
+    
+    # Sauvegarde de l'image de couverture
+    new_p_image.save(cover_p_path)
+    new_image.save(cover_image_path)
+
+    # Vérification si les images ont bien été sauvegardée
+    if not os.path.isfile(cover_image_path):
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='Failed to save cover image.'
+        )
+    if not os.path.isfile(cover_p_path):
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='Failed to save cover player.'
+        )
         
     new_movie = Movie(
+        cover_player=cover_p_filename,
         langueId=langueId,
         title=title,
         cover_image=cover_image_filename,
@@ -182,6 +245,12 @@ async def create_movie(
         new_genre_movie = GenreMovie(genreId=genre_id, movieId=new_movie.id)
         db.add(new_genre_movie)
         db.commit()
+        
+    if gallery:
+        for img_g in galery_filename:
+            new_img_g = Slide(movieId=new_movie.id, img=img_g)
+            db.add(new_img_g)
+            db.commit()
 
     return "Movie created successfully."
 
@@ -307,7 +376,10 @@ async def update_movie(id: int, request: dict, db: Session) -> str:
 async def activate_movie(id: int, db: Session) -> str:
     movie = await get_movie(id, db)
     
-    movie.is_active = not movie.is_active
+    if movie.is_active == 'running':
+        movie.is_active = 'close'
+    else:
+        movie.is_active = 'running'
     db.commit()
     db.refresh(movie)
     
@@ -318,6 +390,10 @@ async def activate_movie(id: int, db: Session) -> str:
 
 async def delete_movie(id: int, db: Session) -> str:
     movie = await get_movie(id, db)
+    db.delete(movie)
+    db.commit()
+    
+    return 'Movie is deleted successfully'
     
     
 async def get_comments(id: int, idComment: Optional[int], db: Session) -> List[Comment]:
