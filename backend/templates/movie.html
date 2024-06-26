@@ -224,12 +224,36 @@ dashboard, backoffice
                             </table>
                         </div>
                     </div>
+                    <!-- paginator -->
+                    <div class="col-12">
+                        <div class="paginator">
+                            <span class="paginator__pages">10 from 38</span>
+
+                            <ul class="paginator__paginator">
+                                <li>
+                                    <a href="#">
+                                        <svg width="14" height="11" viewBox="0 0 14 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.75 5.36475L13.1992 5.36475" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5.771 10.1271L0.749878 5.36496L5.771 0.602051" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                    </a>
+                                </li>
+                                <li class="active"><a href="#">1</a></li>
+                                <li><a href="#">2</a></li>
+                                <li><a href="#">3</a></li>
+                                <li><a href="#">4</a></li>
+                                <li>
+                                    <a href="#">
+                                        <svg width="14" height="11" viewBox="0 0 14 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.1992 5.3645L0.75 5.3645" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8.17822 0.602051L13.1993 5.36417L8.17822 10.1271" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- end paginator -->
                 </div>
                 <div class="tab-pane fade" id="tab-3" role="tabpanel" aria-labelledby="3-tab">
                     <div class="col-12 mb-4">
                         <div class="main__title-wrap">
                             <a href="#modal-download-link" class="main__title-link" id="btn-link-add">
-                                add Comment
+                                add Link
                             </a>
                         </div>
                     </div>
@@ -240,45 +264,13 @@ dashboard, backoffice
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>ITEM</th>
-                                        <th>AUTHOR</th>
-                                        <th>TEXT</th>
-                                        <th>LIKE / DISLIKE</th>
-                                        <th>CRAETED DATE</th>
+                                        <th>INFOS</th>
+                                        <th>STATUS</th>
                                         <th>ACTIONS</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="main__table-text">23</div>
-                                        </td>
-                                        <td>
-                                            <div class="main__table-text"><a href="#">I Dream in Another Language</a></div>
-                                        </td>
-                                        <td>
-                                            <div class="main__table-text">John Doe</div>
-                                        </td>
-                                        <td>
-                                            <div class="main__table-text">Lorem Ipsum is simply dummy text...</div>
-                                        </td>
-                                        <td>
-                                            <div class="main__table-text">12 / 7</div>
-                                        </td>
-                                        <td>
-                                            <div class="main__table-text">24 Oct 2021</div>
-                                        </td>
-                                        <td>
-                                            <div class="main__table-btns">
-                                                <a href="#modal-view" class="main__table-btn main__table-btn--view open-modal">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z"/></svg>
-                                                </a>
-                                                <a href="#modal-delete" class="main__table-btn main__table-btn--delete open-modal">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,10,18ZM20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,4,8H5V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V8h1a1,1,0,0,0,0-2ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10Zm7,14a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1V8H17Zm-3-1a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,14,18Z"/></svg>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                <tbody id="tbodyLink">
+                                    
                                 </tbody>
                             </table>
                         </div>
@@ -295,85 +287,9 @@ dashboard, backoffice
 
                     <div class="col-12">
                         <div class="main__table-wrap">
-                            <table class="main__table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>ITEM</th>
-                                        <th>AUTHOR</th>
-                                        <th>TEXT</th>
-                                        <th>LIKE / DISLIKE</th>
-                                        <th>CRAETED DATE</th>
-                                        <th>ACTIONS</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="main__table-text">23</div>
-                                        </td>
-                                        <td>
-                                            <div class="main__user">
-                                                <div class="main__avatar">
-                                                    <img src="/static/img/user.svg" alt="">
-                                                </div>
-                                                <div class="main__meta">
-                                                    <h3>John Doe</h3>
-                                                    <span>email@email.com</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="main__table-text">John Doe</div>
-                                        </td>
-                                        <td>
-                                            <div class="main__table-text">Lorem Ipsum is simply dummy text...</div>
-                                        </td>
-                                        <td>
-                                            <div class="main__table-text">12 / 7</div>
-                                        </td>
-                                        <td>
-                                            <div class="main__table-text">24 Oct 2021</div>
-                                        </td>
-                                        <td>
-                                            <div class="main__table-btns">
-                                                <a href="#modal-view" class="main__table-btn main__table-btn--view open-modal">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z"/></svg>
-                                                </a>
-                                                <a href="#modal-delete" class="main__table-btn main__table-btn--delete open-modal">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,10,18ZM20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,4,8H5V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V8h1a1,1,0,0,0,0-2ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10Zm7,14a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1V8H17Zm-3-1a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,14,18Z"/></svg>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="lightgallery"></div>
                         </div>
                     </div>
-                    <!-- paginator -->
-						<div class="col-12">
-							<div class="paginator">
-								<span class="paginator__pages">10 from 38</span>
-
-								<ul class="paginator__paginator">
-									<li>
-										<a href="#">
-											<svg width="14" height="11" viewBox="0 0 14 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0.75 5.36475L13.1992 5.36475" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5.771 10.1271L0.749878 5.36496L5.771 0.602051" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-										</a>
-									</li>
-									<li class="active"><a href="#">1</a></li>
-									<li><a href="#">2</a></li>
-									<li><a href="#">3</a></li>
-									<li><a href="#">4</a></li>
-									<li>
-										<a href="#">
-											<svg width="14" height="11" viewBox="0 0 14 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.1992 5.3645L0.75 5.3645" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M8.17822 0.602051L13.1993 5.36417L8.17822 10.1271" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-										</a>
-									</li>
-								</ul>
-							</div>
-						</div>
-						<!-- end paginator -->
                 </div>
             </div>
             <!-- end conten tabs-->
@@ -387,7 +303,7 @@ dashboard, backoffice
     <h6 class="modal__title">Add Download Link</h6>
     
     <div class="modal__body">
-        <form id="form">
+        <form id="form-link">
             <input type="hidden" id="linkId">
             <div class="sign__group">
                 <label class="sign__label" for="advertisement">Advertisement</label>
@@ -415,7 +331,7 @@ dashboard, backoffice
     <h6 class="modal__title">Add Slide</h6>
     
     <div class="modal__body">
-        <form id="form">
+        <form id="form-slide">
             <input type="hidden" id="slideId">
             <div class="form__gallery">
                 <label id="gallery1" for="form__gallery-upload">Upload photos Slide</label>
@@ -490,6 +406,37 @@ dashboard, backoffice
             .create();
         }).catch(function(error) {
             console.error("Failed to fetch episodes:", error);
+        });
+
+        const imageURL = '/movies/{{ id }}/slides/'
+        $.get(imageURL, function(data) {
+            data.forEach(function(image) {
+                $('#lightgallery').append(
+                    `<a href="/static/slides/${image.img}" data-sub-html="<h4>${image.title}</h4><p>${image.description}</p>">
+                        <img src="/static/slides/${image.img}" alt="${image.title}">
+                    </a>`
+                )
+            })
+
+            $('#lightgallery').lightGallery({
+                thumbnail: true
+            });
+        })
+
+        $.ajax({
+            url: "/movies/{{ id }}/slides/",
+            method: "GET",
+            dataType: "JSON",
+            success: function(data) {
+                console.log(data)
+            },
+            error: function(errors) {
+                console.log(errors)
+            }
+        })
+
+        lightGallery(document.getElementById('lightgallery'), {
+            thumbnail: true,
         });
     })
     
@@ -596,6 +543,8 @@ dashboard, backoffice
                     $('#btn-close').addClass('profile__action profile__action--delete open-modal')
                 }
 
+                fetchLinks()
+
                 $.ajax({
                     url: `/videos`,
                     method: 'GET',
@@ -622,6 +571,72 @@ dashboard, backoffice
                 });
             });
         });
+    }
+
+    function fetchLinks() {
+        $.ajax({
+            url: '/movies/{{ id }}/download-links/',
+            method: 'GET',
+            dataType: 'JSON',
+            success: function(data) {
+                var list = ''
+                if(data.length > 0) {
+                    $.each(data, function(key, value) {
+                        function formatDate(dateString) {
+                            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+                            return new Date(dateString).toLocaleDateString('en-US', options);
+                        }
+                        key += 1
+                        list += '<tr>'
+                        list += '    <td>'
+                        list += '        <div class="main__table-text">'+key+'</div>'
+                        list += '    </td>'
+                        list += '    <td>'
+                        list += '<div class="main__user">'
+                        list += '    <div class="main__meta">'
+                        list += '        <h3>'+value.advertisement+'</h3>'
+                        list += '        <span>'+value.link+'</span>'
+                        list += '    </div>'
+                        list += '</div>'
+                        list += '    </td>'
+                        list += '    <td>'
+                        if(value.is_active) {
+                        list += '        <div class="main__table-text main__table-text--green">Activate</div>'
+                        } else {
+                        list += '        <div class="main__table-text main__table-text--red">Deactivate</div>'
+                        }
+                        list += '    </td>'
+                        list += '    <td>'
+                        list += '        <div class="main__table-btns">'
+                        list += '<a href="#modal-status" onclick="closedMovie(1)" class="profile__action--banned profile__action open-modal" id="btn-close">'
+                        list += '    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+                        list += '        <path d="M12,13a1.49,1.49,0,0,0-1,2.61V17a1,1,0,0,0,2,0V15.61A1.49,1.49,0,0,0,12,13Zm5-4V7A5,5,0,0,0,7,7V9a3,3,0,0,0-3,3v7a3,3,0,0,0,3,3H17a3,3,0,0,0,3-3V12A3,3,0,0,0,17,9ZM9,7a3,3,0,0,1,6,0V9H9Zm9,12a1,1,0,0,1-1,1H7a1,1,0,0,1-1-1V12a1,1,0,0,1,1-1H17a1,1,0,0,1,1,1Z"></path>'
+                        list += '    </svg>'
+                        list += '</a>'
+                        list += '<a href="#modal-add" class="main__table-btn main__table-btn--edit" onclick="updateUser(2)" id="btn-up">'
+                        list += '    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+                        list += '        <path d="M22,7.24a1,1,0,0,0-.29-.71L17.47,2.29A1,1,0,0,0,16.76,2a1,1,0,0,0-.71.29L13.22,5.12h0L2.29,16.05a1,1,0,0,0-.29.71V21a1,1,0,0,0,1,1H7.24A1,1,0,0,0,8,21.71L18.87,10.78h0L21.71,8a1.19,1.19,0,0,0,.22-.33,1,1,0,0,0,0-.24.7.7,0,0,0,0-.14ZM6.83,20H4V17.17l9.93-9.93,2.83,2.83ZM18.17,8.66,15.34,5.83l1.42-1.41,2.82,2.82Z"></path>'
+                        list += '    </svg>'
+                        list += '</a>'
+                        list += '            <a href="#modal-delete" class="main__table-btn main__table-btn--delete open-modal">'
+                        list += '                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,10,18ZM20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,4,8H5V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V8h1a1,1,0,0,0,0-2ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10Zm7,14a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1V8H17Zm-3-1a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,14,18Z"/></svg>'
+                        list += '            </a>'
+                        list += '        </div>'
+                        list += '    </td>'
+                        list += '</tr>'
+                    })
+                    
+                } else {
+                    list = '<td colspan="8">'
+                    list += '<div class="main__table-text">No data found</div>'
+                    list += '</td>';
+                } 
+                $('#tbodyLink').html(list)
+            },
+            error: function(errors) {
+                console.log(errors)
+            }
+        })
     }
 
     window.closedMovie = function(id) {
@@ -755,5 +770,149 @@ dashboard, backoffice
             }
         })
     })
+
+    $('#btnAddSlide').on('click', function(event) {
+        event.preventDefault();
+        access_token = getCookie('access_token');
+    
+        const formData = new FormData($('#form-slide')[0]);
+    
+        var files = $('#form__gallery-upload')[0].files;
+        Array.from(files).forEach(function(file) {
+            if (file instanceof File) {
+                formData.append('gallery', file);
+            }
+        });
+    
+        const errorFields = [
+            'gallery'
+        ];
+    
+        const resetErrors = () => {
+            errorFields.forEach(field => {
+                $(`#error-${field}`).text('');
+            });
+        };
+    
+        $.ajax({
+            url: '/movies/slides/',
+            method: 'POST',
+            dataType: 'JSON',
+            headers: {
+                'movieId': {{ id }},
+                'Authorization': 'Bearer ' + access_token
+            },
+            processData: false,
+            contentType: false,
+            data: formData,
+            beforeSend: function() {
+                $('#btnAddSlide').prop('disabled', true);
+                $('#btnAddSlide').append('<div class="spinner"></div>');
+            },
+            complete: function() {
+                $('#btnAddSlide').prop('disabled', false);
+                $('.spinner').remove();
+            },
+            success: function(data) {
+                $('#form-slide')[0].reset();
+                $('#gallery1').text('Upload photos Slide');
+                $('#btnAddSlide').prop('disabled', false);
+                $('.spinner').remove();
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: data,
+                    showConfirmButton: false,
+                    timer: 1000
+                })
+            },
+            error: function(errors) {
+                console.log(errors)
+                $('#btnAddSlide').prop('disabled', false);
+                $('.spinner').remove();
+                resetErrors();
+                if (errors.status === 422) {
+                    errors.responseJSON.detail.forEach(value => {
+                        if (value.loc) {
+                            const field = value.loc[1];
+                            if (errorFields.includes(field)) {
+                                $(`#error-${field}`).text(value.msg);
+                            }
+                        }
+                    })
+                    $('#error-gallery').text('')
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Operation failed',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                } else {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: errors.responseJSON.detail,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            }
+        })
+    })
+
+    $('#btnAddLink').on('click', function(event) {
+        event.preventDefault();
+        access_token = getCookie('access_token');
+    
+        const formData = JSON.stringify({
+            advertisement: $('#advertisement').val(),
+            link: $('#link').val()
+        });
+    
+        $.ajax({
+            url: '/movies/download-links/',
+            method: 'POST',
+            dataType: 'JSON',
+            contentType: 'application/json',
+            data: formData,
+            headers: {
+                'movieId': {{ id }},
+                'Authorization': 'Bearer ' + access_token
+            },
+            beforeSend: function() {
+                $('#btnAddLink').prop('disabled', true);
+                $('#btnAddLink').append('<div class="spinner"></div>');
+            },
+            complete: function() {
+                $('#btnAddLink').prop('disabled', false);
+                $('.spinner').remove();
+            },
+            success: function(data) {
+                $('#advertisement').val('')
+                $('#link').val('')
+                fetchLinks()
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Link added successfully',
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            },
+            error: function(errors) {
+                console.log(errors);
+                $('#btnAddLink').prop('disabled', false);
+                $('.spinner').remove();
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Failed to add link',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        });
+    });
 </script>
 {% endblock %}

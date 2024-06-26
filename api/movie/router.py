@@ -102,8 +102,12 @@ async def delete_comments(id: int, idComment: Optional[int] = Header(None), db: 
 
 
 @router.post('/download-links/', status_code=status.HTTP_200_OK)
-async def create_links(request: schemas.DownloadLink, db: Session = Depends(get_db)):
-    return await services.create_links(request, db)
+async def create_links(
+    request: schemas.DownloadLink, 
+    movieId: int = Header(...), 
+    db: Session = Depends(get_db)
+):
+    return await services.create_links(request, movieId, db)
 
 
 @router.get('/{id}/download-links/', status_code=status.HTTP_200_OK)
@@ -111,11 +115,30 @@ async def get_links(id: int, idlink: Optional[int] = Header(None), db: Session =
     return await services.get_links(id, idlink, db)
 
 
-@router.get('/{id}/download-links/{idlink}/activate/', status_code=status.HTTP_200_OK)
-async def activate_links(id: int, idlink: int, db: Session = Depends(get_db)):
+@router.get('/download-links/{id}/activate/', status_code=status.HTTP_200_OK)
+async def activate_links(id: int, idlink: Optional[int] = Header(None), db: Session = Depends(get_db)):
     return await services.activate_links(id, idlink, db)
 
 
 @router.delete('/{id}/download-links/', status_code=status.HTTP_200_OK)
 async def delete_links(id: int, idlink: Optional[int] = Header(None), db: Session = Depends(get_db)):
     return await services.delete_links(id, idlink, db)
+
+
+@router.post('/slides/', status_code=status.HTTP_200_OK)
+async def create_slide(
+    movieId: int = Header(...),
+    gallery: List[UploadFile] = File(...),
+    db: Session = Depends(get_db)
+):
+    return await services.create_slide(movieId=movieId, imgs=gallery, db=db)
+
+
+@router.get('/{id}/slides/')
+async def get_slides(id: int, idSlide: Optional[int] = Header(None), db: Session = Depends(get_db)):
+    return await services.get_slides(id, idSlide, db)
+
+
+@router.delete('/{id}/slides/')
+async def delete_slide(id: int, idSlide: Optional[int] = Header(None), db: Session = Depends(get_db)):
+    return await services.delete_slide(id, idSlide, db)

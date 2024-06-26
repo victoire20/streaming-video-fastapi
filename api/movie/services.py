@@ -435,12 +435,12 @@ async def get_links(id: int, idLink: Optional[int], db: Session) -> List[Downloa
     if idLink:
         query = query.filter(DownloadLink.id == idLink)
         
-    return query
+    return query.all()
 
 
-async def create_links(request: dict, db: Session) -> str:
+async def create_links(request: dict, movieId: int, db: Session) -> str:
     new_link = DownloadLink(
-        movieId=request.movieId,
+        movieId=movieId,
         advertisement=request.advertisement,
         link=request.link
     )
@@ -450,30 +450,43 @@ async def create_links(request: dict, db: Session) -> str:
     return 'Link added successfully.'
 
 
-async def activate_links(id: int, idLink: int, db: Session) -> str:
-    links = await get_links(id, idLink, db)
+async def activate_links(id: int, idLink: Optional[int], db: Session) -> str:
+    
+    if idLink:
+        links = await get_links(id, idLink, db)
+        if not links:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='Link not found.'
+            )
+        
+        link = links[0]
+        link.is_active = not link.is_active
+        db.commit()
+        db.refresh(link)
+    
+        if link.is_active:
+            return 'Link activated successfully.'
+        return 'Link deactivated successfully.'
+    
+    links = db.query(DownloadLink).filter(DownloadLink.movieId == id).all()
     if not links:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail='Link not found.'
+            detail='This ID does not correspond to any film in our database!'
         )
-    
-    link = links[0]
-    link.is_active = not link.is_active
+        
+    for link in links:
+        link.is_active = False
+        
     db.commit()
-    db.refresh(link)
+    return 'All links have been successfully deactivated!'
     
-    if link.is_active:
-        return 'Link activated successfully.'
-    return 'Link deactivated successfully.'
 
 
 async def delete_links(id: int, idLink: Optional[int], db: Session) -> str:
     query = db.query(DownloadLink).filter(DownloadLink.movieId == id)
     
-    if idLink:
-        query = query.filter(DownloadLink.id == idLink)
-        
     if idLink:
         query = query.filter(DownloadLink.id == idLink)
     
@@ -482,7 +495,7 @@ async def delete_links(id: int, idLink: Optional[int], db: Session) -> str:
     if not links_to_delete:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
-            detail="No comments found to delete."
+            detail="No links found to delete."
         )
         
     for link in links_to_delete:
@@ -490,3 +503,85 @@ async def delete_links(id: int, idLink: Optional[int], db: Session) -> str:
         
     db.commit()
     return 'Link(s) deleted successfully.'
+
+
+async def create_slide(movieId: int, imgs: List[UploadFile], db: Session) -> str:
+    timestamp = int(time.time())
+    index = 0
+    movie = db.query(Movie).filter(Movie.id == movieId).first()
+    if not movie:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='This ID does not correspond to any film in our database!'
+        )
+    
+    for img in imgs:
+        contents = await img.read()
+        width, height = get_image_dimensions(contents)
+        if width < 1000:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Width of the gallery image must not be greater than 1000 px'
+            )
+        
+        if height < 500:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Height of the gallery image must not be greater than 500 px'
+            )
+    
+        if img.size > 1 * 1024 * 1024:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Image size should not exceed 1MB.'
+            )
+        
+        img_content = Image.open(io.BytesIO(contents))
+        img_content = img_content.resize((1172, 564))
+    
+        img_extension = img.content_type.split('/')[1]
+        if img_extension not in ['jpeg', 'jpg']:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Gallery images type should be either jpeg or jpg.'
+            )
+        img_filename = f'{timestamp+index}.{img_extension}' 
+        img_path = os.path.join(BASE_MEDIA_URL, 'slides', img_filename)
+        img_content.save(img_path)
+        index += 1
+        
+        new_slide = Slide(movieId=movie.id, img=img_filename)
+        db.add(new_slide)
+        
+    db.commit()
+    return 'The slide was successfully saved!'
+
+
+async def get_slides(id, idSlide: Optional[int], db) -> List[Slide]:
+    query = db.query(Slide.movieId == id)
+    
+    if idSlide:
+        query = query.filter(Slide.id == idSlide)
+        
+    return query.all()
+
+
+async def delete_slide(id, idSlide, db) -> str:
+    query = db.query(Slide).filter(Slide.movieId == id)
+    
+    if idSlide:
+        query = query.filter(Slide.id == idSlide)
+        
+    slides_to_delete = query.all()
+    
+    if not slides_to_delete:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            detail="No slides found to delete."
+        )
+        
+    for slide in slides_to_delete:
+        db.delete(link)
+        
+    db.commit()
+    return 'Slide(s) deleted successfully.'
