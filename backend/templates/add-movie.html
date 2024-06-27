@@ -100,21 +100,7 @@ dashboard, backoffice
                                         <span id="error-genreId" style="color: red; font-size: small;"></span>
                                     </div>
                                 </div>
-
-                                <div class="col-12 col-lg-6">
-                                    <div class="form__gallery">
-                                        <label id="cover_player" for="form__cover-upload">Upload cover player</label>
-                                        <input data-name="#cover_player" id="form__cover-upload" name="cover_player" class="form__gallery-upload" type="file" accept=".png, .jpg, .jpeg">
-                                        <span id="error-cover_player" style="color: red; font-size: small;"></span>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-6">
-                                    <div class="form__gallery">
-                                        <label id="gallery1" for="form__gallery-upload">Upload photos Slide</label>
-                                        <input data-name="#gallery1" id="form__gallery-upload" name="gallery[]" class="form__gallery-upload" type="file" accept=".png, .jpg, .jpeg" multiple="">
-                                        <span id="error-gallery" style="color: red; font-size: small;"></span>
-                                    </div>
-                                </div>
+                                
                                 <div class="col-12">
                                     <div class="form__group">
                                         <input type="text" name="meta_keywords" id="meta_keywords" class="form__input" placeholder="Keywords">
@@ -161,7 +147,14 @@ dashboard, backoffice
                         
                         <div class="col-12">
                             <div class="row">
-                                <div class="col-12 col-lg-6">
+                                <div class="col-12 col-lg-4">
+                                    <div class="form__gallery">
+                                        <label id="cover_player" for="form__cover-upload">Upload cover player</label>
+                                        <input data-name="#cover_player" id="form__cover-upload" name="cover_player" class="form__gallery-upload" type="file" accept=".png, .jpg, .jpeg">
+                                        <span id="error-cover_player" style="color: red; font-size: small;"></span>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-4">
                                     <div class="form__video">
                                         <label id="movie1" for="form__video-upload">Upload video File</label>
                                         <input data-name="#movie1" id="form__video-upload" name="zip_file" class="form__video-upload" type="file" accept=".rar, .zip">
@@ -169,7 +162,7 @@ dashboard, backoffice
                                     </div>
                                 </div>
 
-                                <div class="col-12 col-lg-6">
+                                <div class="col-12 col-lg-4">
                                     <div class="form__group form__group--link">
                                         <input type="text" class="form__input" placeholder="or add a link">
                                     </div>
@@ -177,7 +170,6 @@ dashboard, backoffice
 
                                 <div class="row">
                                     <div class="col-6 d-flex justify-content-start">
-                                        <button id="btn-save" class="modal__btn modal__btn--apply" type="button" style="display: none;">Save</button>
                                         <a href='/movies' class="form__btn" style="background: red">Cancel</a>
                                     </div>
                                     <div class="col-6 d-flex justify-content-end">
@@ -266,13 +258,6 @@ dashboard, backoffice
         var genreIdValues = selectedValues.map(function(value) {
             return parseInt(value, 10);
         });
-
-        var files = $('#form__gallery-upload')[0].files;
-        Array.from(files).forEach(function(file) {
-            if (file instanceof File) {
-                formData.append('gallery[]', file);
-            }
-        });
         
         genreIdValues.forEach(function(value) {
             if (!isNaN(value)) {
@@ -282,7 +267,7 @@ dashboard, backoffice
 
         const errorFields = [
             'genreId', 'langueId', 'title', 'cover_image', 'description', 'meta_keywords', 'cover_player',
-            'release_year', 'running_time', 'age_limit', 'zip_file', 'movie_type', 'status', 'gallery'
+            'release_year', 'running_time', 'age_limit', 'zip_file', 'movie_type', 'status'
         ];
 
         const resetErrors = () => {
@@ -295,7 +280,6 @@ dashboard, backoffice
             $('#form')[0].reset();
             $('#form__img').attr('src', '');
             $('#cover_player').text('Upload cover player');
-            $('#gallery1').text('Upload photo Slide');
             $('#movie1').text('Upload video File');
             $('#serie').attr('checked', true);
             $('#film').attr('checked', false);
@@ -308,6 +292,10 @@ dashboard, backoffice
             url: '/movies/',
             method: 'POST',
             dataType: 'JSON',
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token
+            },
             processData: false,
             contentType: false,
             data: formData,

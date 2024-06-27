@@ -25,7 +25,6 @@ async def create_movie(
     release_year: Optional[str] = Form(None),
     running_time: Optional[str] = Form(None),
     age_limit: Optional[str] = Form(None),
-    gallery: Optional[List[UploadFile]] = File(None),
     zip_file: UploadFile = Form(...),
     movie_type: str = Form(...),
     meta_keywords: str = Form(...),
@@ -41,7 +40,6 @@ async def create_movie(
         release_year=release_year,
         running_time=running_time,
         age_limit=age_limit,
-        gallery=gallery,
         zip_file=zip_file,
         movie_type=movie_type, 
         meta_keywords=meta_keywords,
@@ -76,9 +74,50 @@ async def get_movie(id: int, db: Session = Depends(get_db)):
     return await services.get_movie(id, db)
 
 
-# @router.put('/{id}/', status_code=status.HTTP_200_OK)
-# async def update_movie(id: int, request: schemas.Movie, db: Session = Depends(get_db)):
-#     return await services.update_movie(id, request, db)
+@router.put('/{id}/', status_code=status.HTTP_200_OK)
+async def update_movie(
+    id: int, 
+    background: BackgroundTasks,
+    cover_player: Optional[UploadFile] = Form(...),
+    genreId: Optional[List[int]] = Form(...),
+    langueId: Optional[int] = Form(...),
+    title: Optional[str] = Form(...),
+    cover_image: Optional[UploadFile] = Form(...),
+    description: Optional[str] = Form(None),
+    release_year: Optional[str] = Form(None),
+    running_time: Optional[str] = Form(None),
+    age_limit: Optional[str] = Form(None),
+    zip_file: Optional[UploadFile] = Form(...),
+    movie_type: Optional[str] = Form(...),
+    meta_keywords: Optional[str] = Form(...),
+    db: Session = Depends(get_db)
+):
+    return await services.update_movie(
+        id,
+        cover_player=cover_player,
+        genreId=genreId,
+        langueId=langueId,
+        title=title,
+        cover_image=cover_image,
+        description=description,
+        release_year=release_year,
+        running_time=running_time,
+        age_limit=age_limit,
+        zip_file=zip_file,
+        movie_type=movie_type, 
+        meta_keywords=meta_keywords,
+        background=background,
+        db=db
+    )
+
+
+@router.put('/{id}/add-episodes/', status_code=status.HTTP_200_OK)
+async def add_episodes(
+    id: int, 
+    episodes: List[UploadFile] = File(...),
+    db: Session = Depends(get_db)
+):
+    return await services.add_episodes(id=id, episodes=episodes, db=db)
 
 
 @router.get('/{id}/activate/', status_code=status.HTTP_200_OK)
@@ -110,6 +149,11 @@ async def create_links(
     return await services.create_links(request, movieId, db)
 
 
+@router.put('/{id}/download-links/', status_code=status.HTTP_200_OK)
+async def update_link(request: schemas.DownloadLink, id: int, db: Session = Depends(get_db)):
+    return await services.update_link(request, id, db)
+
+
 @router.get('/{id}/download-links/', status_code=status.HTTP_200_OK)
 async def get_links(id: int, idlink: Optional[int] = Header(None), db: Session = Depends(get_db)):
     return await services.get_links(id, idlink, db)
@@ -136,7 +180,7 @@ async def create_slide(
 
 @router.get('/{id}/slides/')
 async def get_slides(id: int, idSlide: Optional[int] = Header(None), db: Session = Depends(get_db)):
-    return await services.get_slides(id, idSlide, db)
+    return await services.get_slides(id=id, idSlide=idSlide, db=db)
 
 
 @router.delete('/{id}/slides/')

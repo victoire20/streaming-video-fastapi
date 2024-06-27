@@ -18,10 +18,31 @@ dashboard, backoffice
 <!-- end sidebar -->
 {% block content %}
 
+<style>
+    .gallery-item {
+        display: inline-block;
+        position: relative;
+        margin: 10px;
+    }
+    .delete-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: #eb5757;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+    }
+</style>
+
 <!-- OPlayer -->
 <script src="https://cdn.jsdelivr.net/npm/@oplayer/plugins@latest/dist/playlist.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@oplayer/core@latest/dist/index.ui.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@oplayer/full@latest/dist/index.min.js"></script>
+
 
 <main class="main">
     <div class="container-fluid">
@@ -92,14 +113,21 @@ dashboard, backoffice
 
                     <!-- profile btns -->
                     <div class="profile__actions">
+                        <a style="display: none;" href="#modal-add-eps" class="profile__action profile__action--edit open-modal" id="btn-eps-add">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M14 8H4m8 3.5v5M9.5 14h5M4 6v13a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-5.032a1 1 0 0 1-.768-.36l-1.9-2.28a1 1 0 0 0-.768-.36H5a1 1 0 0 0-1 1Z"/>
+                            </svg>
+                        </a>
                         <a href="#modal-status" onclick="closedMovie({{ id }})" class="profile__action profile__action--banned open-modal" id="btn-close">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <path d="M12,13a1.49,1.49,0,0,0-1,2.61V17a1,1,0,0,0,2,0V15.61A1.49,1.49,0,0,0,12,13Zm5-4V7A5,5,0,0,0,7,7V9a3,3,0,0,0-3,3v7a3,3,0,0,0,3,3H17a3,3,0,0,0,3-3V12A3,3,0,0,0,17,9ZM9,7a3,3,0,0,1,6,0V9H9Zm9,12a1,1,0,0,1-1,1H7a1,1,0,0,1-1-1V12a1,1,0,0,1,1-1H17a1,1,0,0,1,1,1Z"/></svg>
-                            </a>
+                                <path d="M12,13a1.49,1.49,0,0,0-1,2.61V17a1,1,0,0,0,2,0V15.61A1.49,1.49,0,0,0,12,13Zm5-4V7A5,5,0,0,0,7,7V9a3,3,0,0,0-3,3v7a3,3,0,0,0,3,3H17a3,3,0,0,0,3-3V12A3,3,0,0,0,17,9ZM9,7a3,3,0,0,1,6,0V9H9Zm9,12a1,1,0,0,1-1,1H7a1,1,0,0,1-1-1V12a1,1,0,0,1,1-1H17a1,1,0,0,1,1,1Z"/>
+                            </svg>
+                        </a>
                         <a href="#modal-delete" onclick="deleteMovie({{ id }})" class="profile__action profile__action--delete open-modal" id="btn-delte">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                                <path d="M10,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,10,18ZM20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,4,8H5V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V8h1a1,1,0,0,0,0-2ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10Zm7,14a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1V8H17Zm-3-1a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,14,18Z"/></svg>
-                            </a>
+                                <path d="M10,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,10,18ZM20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,4,8H5V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V8h1a1,1,0,0,0,0-2ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10Zm7,14a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1V8H17Zm-3-1a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,14,18Z"/>
+                            </svg>
+                        </a>
                     </div>
                     <!-- end profile btns -->
                 </div>
@@ -287,7 +315,7 @@ dashboard, backoffice
 
                     <div class="col-12">
                         <div class="main__table-wrap">
-                            <div class="lightgallery"></div>
+                            <div class="gallery"></div>
                         </div>
                     </div>
                 </div>
@@ -296,6 +324,28 @@ dashboard, backoffice
         </div>
     </div>
 </main>
+
+
+<!-- modal add episodes -->
+<div id="modal-add-eps" class="zoom-anim-dialog mfp-hide modal">
+    <h6 class="modal__title">Add New Episode</h6>
+    
+    <div class="modal__body">
+        <form id="form-eps-add">
+            <div class="form__gallery">
+                <label id="gallery2" for="form__gallery-uploads">Upload episodes files</label>
+                <input data-name="#gallery2" id="form__gallery-uploads" name="gallery[]" class="form__gallery-upload" type="file" accept=".mp4, .mkv, .webm, .flv" multiple="">
+                <span id="error-episodes" style="color: red; font-size: small;"></span>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal__btns">
+        <button class="modal__btn modal__btn--dismiss" type="button">Dismiss</button>
+        <button class="modal__btn modal__btn--apply" type="button" id="btnEpsAdd">Add</button>
+    </div>
+</div>
+<!-- end modal slides -->
 
 
 <!-- modal download links -->
@@ -320,7 +370,8 @@ dashboard, backoffice
 
     <div class="modal__btns">
         <button class="modal__btn modal__btn--dismiss" type="button">Dismiss</button>
-        <button class="modal__btn modal__btn--apply" type="button" id="btnAddLink">Delete</button>
+        <button style="display: none;" class="modal__btn modal__btn--apply" type="button" id="btnAddLink">Add</button>
+        <button style="background-color: #ffc312; display: none;" class="modal__btn modal__btn--apply" type="button" id="btnUpLink">Update</button>
     </div>
 </div>
 <!-- end modal download links -->
@@ -343,7 +394,7 @@ dashboard, backoffice
 
     <div class="modal__btns">
         <button class="modal__btn modal__btn--dismiss" type="button">Dismiss</button>
-        <button class="modal__btn modal__btn--apply" type="button" id="btnAddSlide">Delete</button>
+        <button class="modal__btn modal__btn--apply" type="button" id="btnAddSlide">Add</button>
     </div>
 </div>
 <!-- end modal slides -->
@@ -374,6 +425,45 @@ dashboard, backoffice
     </div>
 </div>
 <!-- end modal status -->
+
+<!-- modal links status -->
+<div id="modal-activate" class="zoom-anim-dialog mfp-hide modal">
+    <h6 class="modal__title">Status change</h6>
+    <input type="hidden" id="idStatus">
+    <p class="modal__text">Are you sure about immediately change status?</p>
+
+    <div class="modal__btns">
+        <button class="modal__btn modal__btn--dismiss" type="button">Dismiss</button>
+        <button class="modal__btn modal__btn--apply" type="button" id="btnLinkStatus">Apply</button>
+    </div>
+</div>
+<!-- end modal links status -->
+
+<!-- modal links delete -->
+<div id="modal-link-delete" class="zoom-anim-dialog mfp-hide modal">
+    <h6 class="modal__title">Review delete</h6>
+    <input type="hidden" id="idLinkDel">
+    <p class="modal__text">Are you sure to permanently delete this review?</p>
+
+    <div class="modal__btns">
+        <button class="modal__btn modal__btn--dismiss" type="button">Dismiss</button>
+        <button class="modal__btn modal__btn--apply" type="button" id="btnLinkDel">Apply</button>
+    </div>
+</div>
+<!-- end modal links delete -->
+
+<!-- modal slides delete -->
+<div id="modal-slide-delete" class="zoom-anim-dialog mfp-hide modal">
+    <h6 class="modal__title">Review delete</h6>
+    <input type="hidden" id="idSlideDel">
+    <p class="modal__text">Are you sure to permanently delete this review?</p>
+
+    <div class="modal__btns">
+        <button class="modal__btn modal__btn--dismiss" type="button">Dismiss</button>
+        <button class="modal__btn modal__btn--apply" type="button" id="btnSlideDel">Apply</button>
+    </div>
+</div>
+<!-- end modal slides delete -->
 
 
 <script>
@@ -408,36 +498,116 @@ dashboard, backoffice
             console.error("Failed to fetch episodes:", error);
         });
 
+        fetchSlides()
+    })
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    function fetchSlides() {
         const imageURL = '/movies/{{ id }}/slides/'
         $.get(imageURL, function(data) {
             data.forEach(function(image) {
-                $('#lightgallery').append(
-                    `<a href="/static/slides/${image.img}" data-sub-html="<h4>${image.title}</h4><p>${image.description}</p>">
-                        <img src="/static/slides/${image.img}" alt="${image.title}">
-                    </a>`
-                )
-            })
+                if (data.length > 0) {
+                    $.each(image.slides, function(key, value){
+                        $('.gallery').append(
+                            `<div class="gallery-item">
+                                <a id='img${value.id}' href="http://127.0.0.1:8000/media/slides/${value.img}" data-lightbox="gallery" data-title="${image.title} - ${image.description}">
+                                    <img src="http://127.0.0.1:8000/media/slides/${value.img}" alt="${image.title}" style="width: 300px; height: auto;">
+                                </a>
+                                <button onclick="deleteSlide(${value.id})" class="delete-button" data-img="${image.img}">X</button>
+                            </div>`
+                        );
+                    })
 
-            $('#lightgallery').lightGallery({
-                thumbnail: true
+                    lightbox.option({
+                        'resizeDuration': 200,
+                        'wrapAround': true
+                    });
+                } else {
+                    $('.gallery').append(
+                        `<div class="main__table-text">No data found</div>`
+                    )
+                }
             });
-        })
+        });
+    }
+
+    window.deleteSlide = function(id) {
+        $.magnificPopup.open({
+            items: {
+                src: '#modal-slide-delete'
+            },
+            type: 'inline',
+            fixedContentPos: true,
+            fixedBgPos: true,
+            overflowY: 'auto',
+            preloader: false,
+            focus: '#username',
+            modal: false,
+            removalDelay: 300,
+            mainClass: 'my-mfp-zoom-in',
+            closeBtnInside: true,
+            callbacks: {
+                open: function() {
+                    $('#idSlideDel').val(id)
+                },
+                close: function() {
+                    $('#idSlideDel').val('')
+                }
+            }
+        });
+    }
+
+    $('#btnSlideDel').on('click', function() {
+        access_token = getCookie('access_token')
+        var id = $('#idSlideDel').val()
 
         $.ajax({
-            url: "/movies/{{ id }}/slides/",
-            method: "GET",
-            dataType: "JSON",
+            url: `/movies/{{ id }}/slides`,
+            method: 'DELETE',
+            dataType: 'JSON',
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token,
+                'idSlide': id
+            },
             success: function(data) {
-                console.log(data)
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: data,
+                    showConfirmButton: false,
+                    timer: 1000
+                })
+                $(`img${id}`).parent('.gallery-item').remove();
+                fetchSlides()
+                $.magnificPopup.close()
             },
             error: function(errors) {
                 console.log(errors)
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: errors.responseJSON.detail,
+                    showConfirmButton: false,
+                    timer: 1000
+                })
             }
         })
-
-        lightGallery(document.getElementById('lightgallery'), {
-            thumbnail: true,
-        });
     })
     
     $('#btn-link-add').on('click', function(event) {
@@ -459,13 +629,15 @@ dashboard, backoffice
             closeBtnInside: true,
             callbacks: {
                 open: function() {
-                    //$('#modal-add-title').text('Add Language');
-                    //$('#btn-save').css('display', 'initial');
-                    //$('#btn-update').css('display', 'none');
+                    $('#modal-add-title').text('Add Language');
+                    $('#btnAddLink').css('display', 'initial');
+                    $('#btnUpLink').css('display', 'none');
                 },
                 close: function() {
-                    //$('#form')[0].reset();
-                    //$('#error-libelle').text('');
+                    $('#error-advertisement').text('')
+                    $('#error-link').text('')
+                    $('#form-link')[0].reset();
+                    $('#error-libelle').text('');
                 }
             }
         });
@@ -500,21 +672,93 @@ dashboard, backoffice
         });
     });
 
-    function getCookie(cname) {
-        let name = cname + "=";
-        let decodedCookie = decodeURIComponent(document.cookie);
-        let ca = decodedCookie.split(';');
-        for(let i = 0; i <ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) == ' ') {
-            c = c.substring(1);
+    $('#btnEpsAdd').on('click', function(event) {
+        event.preventDefault()
+        access_token = getCookie('access_token')
+            
+        const formData = new FormData($('#form-eps-add')[0])
+    
+        var files = $('#form__gallery-uploads')[0].files
+        Array.from(files).forEach(function(file) {
+            if (file instanceof File) {
+                formData.append('episodes', file)
             }
-            if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-            }
+        })
+    
+        const errorFields = [
+            'episodes'
+        ]
+    
+        const resetErrors = () => {
+            errorFields.forEach(field => {
+                $(`#error-${field}`).text('')
+            })
         }
-        return "";
-    }
+
+        $.ajax({
+            url: '/movies/{{ id }}/add-episodes/',
+            method: 'PUT',
+            dataType: 'JSON',
+            headers: {
+                'Authorization': 'Bearer ' + access_token
+            },
+            processData: false,
+            contentType: false,
+            data: formData,
+            beforeSend: function() {
+                $('#btnEpsAdd').prop('disabled', true)
+                $('#btnEpsAdd').append('<div class="spinner"></div>')
+            },
+            complete: function() {
+                $('#btnEpsAdd').prop('disabled', false)
+                $('.spinner').remove()
+            },
+            success: function(data) {
+                $('#form-slide')[0].reset()
+                $('#gallery2').text('Upload photos Slide')
+                $('.spinner').remove()
+                fetchAllEps()
+                $.magnificPopup.close()
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: data,
+                    showConfirmButton: false,
+                    timer: 1000
+                })
+            },
+            error: function(errors) {
+                $('#btnEpsAdd').prop('disabled', false)
+                $('.spinner').remove()
+                resetErrors()
+                if (errors.status === 422) {
+                    errors.responseJSON.detail.forEach(value => {
+                        if (value.loc) {
+                            const field = value.loc[1];
+                            if (errorFields.includes(field)) {
+                                $(`#error-${field}`).text(value.msg)
+                            }
+                        }
+                    })
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'Operation failed',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                } else {
+                    Swal.fire({
+                        position: 'top-end',
+                        icon: 'error',
+                        title: errors.responseJSON.detail,
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            }
+        })
+    })
 
     function fetchAllEps() {
         return new Promise(function(resolve, reject) {
@@ -531,6 +775,7 @@ dashboard, backoffice
                     $('.c_status').css('display', 'none')
                     $('.r_status').css('display', 'initial')
                     $('.r_status').text('Running')
+                    $('#btn-eps-add').css('display', 'flex')
 
                     $('#btn-close').removeClass('profile__action profile__action--delete open-modal')
                     $('#btn-close').addClass('profile__action profile__action--banned open-modal')
@@ -538,6 +783,7 @@ dashboard, backoffice
                     $('.r_status').css('display', 'none')
                     $('.c_status').css('display', 'initial')
                     $('.c_status').text('Closed')
+                    $('#btn-eps-add').css('display', 'none')
 
                     $('#btn-close').removeClass('profile__action profile__action--banned open-modal')
                     $('#btn-close').addClass('profile__action profile__action--delete open-modal')
@@ -608,17 +854,25 @@ dashboard, backoffice
                         list += '    </td>'
                         list += '    <td>'
                         list += '        <div class="main__table-btns">'
-                        list += '<a href="#modal-status" onclick="closedMovie(1)" class="profile__action--banned profile__action open-modal" id="btn-close">'
-                        list += '    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
-                        list += '        <path d="M12,13a1.49,1.49,0,0,0-1,2.61V17a1,1,0,0,0,2,0V15.61A1.49,1.49,0,0,0,12,13Zm5-4V7A5,5,0,0,0,7,7V9a3,3,0,0,0-3,3v7a3,3,0,0,0,3,3H17a3,3,0,0,0,3-3V12A3,3,0,0,0,17,9ZM9,7a3,3,0,0,1,6,0V9H9Zm9,12a1,1,0,0,1-1,1H7a1,1,0,0,1-1-1V12a1,1,0,0,1,1-1H17a1,1,0,0,1,1,1Z"></path>'
-                        list += '    </svg>'
-                        list += '</a>'
-                        list += '<a href="#modal-add" class="main__table-btn main__table-btn--edit" onclick="updateUser(2)" id="btn-up">'
+                        if(value.is_active) {
+                            list += '<a href="#" onclick="ActivateLink('+value.id+')" class="profile__action--banned profile__action open-modal" id="btn-link-status">'
+                            list += '    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+                            list += '        <path d="M12,13a1.49,1.49,0,0,0-1,2.61V17a1,1,0,0,0,2,0V15.61A1.49,1.49,0,0,0,12,13Zm5-4V7A5,5,0,0,0,7,7V9a3,3,0,0,0-3,3v7a3,3,0,0,0,3,3H17a3,3,0,0,0,3-3V12A3,3,0,0,0,17,9ZM9,7a3,3,0,0,1,6,0V9H9Zm9,12a1,1,0,0,1-1,1H7a1,1,0,0,1-1-1V12a1,1,0,0,1,1-1H17a1,1,0,0,1,1,1Z"></path>'
+                            list += '    </svg>'
+                            list += '</a>'
+                        } else {
+                            list += '<a href="#" onclick="ActivateLink('+value.id+')" class="profile__action--delete profile__action open-modal" id="btn-link-status">'
+                            list += '    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+                            list += '        <path d="M12,13a1.49,1.49,0,0,0-1,2.61V17a1,1,0,0,0,2,0V15.61A1.49,1.49,0,0,0,12,13Zm5-4V7A5,5,0,0,0,7,7V9a3,3,0,0,0-3,3v7a3,3,0,0,0,3,3H17a3,3,0,0,0,3-3V12A3,3,0,0,0,17,9ZM9,7a3,3,0,0,1,6,0V9H9Zm9,12a1,1,0,0,1-1,1H7a1,1,0,0,1-1-1V12a1,1,0,0,1,1-1H17a1,1,0,0,1,1,1Z"></path>'
+                            list += '    </svg>'
+                            list += '</a>'
+                        }
+                        list += '<a href="#" class="main__table-btn main__table-btn--edit" onclick="updateLink('+value.id+')" id="btn-link-up">'
                         list += '    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
                         list += '        <path d="M22,7.24a1,1,0,0,0-.29-.71L17.47,2.29A1,1,0,0,0,16.76,2a1,1,0,0,0-.71.29L13.22,5.12h0L2.29,16.05a1,1,0,0,0-.29.71V21a1,1,0,0,0,1,1H7.24A1,1,0,0,0,8,21.71L18.87,10.78h0L21.71,8a1.19,1.19,0,0,0,.22-.33,1,1,0,0,0,0-.24.7.7,0,0,0,0-.14ZM6.83,20H4V17.17l9.93-9.93,2.83,2.83ZM18.17,8.66,15.34,5.83l1.42-1.41,2.82,2.82Z"></path>'
                         list += '    </svg>'
                         list += '</a>'
-                        list += '            <a href="#modal-delete" class="main__table-btn main__table-btn--delete open-modal">'
+                        list += '            <a href="#" onClick="deleteLink('+value.id+')" class="main__table-btn main__table-btn--delete open-modal">'
                         list += '                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10,18a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,10,18ZM20,6H16V5a3,3,0,0,0-3-3H11A3,3,0,0,0,8,5V6H4A1,1,0,0,0,4,8H5V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V8h1a1,1,0,0,0,0-2ZM10,5a1,1,0,0,1,1-1h2a1,1,0,0,1,1,1V6H10Zm7,14a1,1,0,0,1-1,1H8a1,1,0,0,1-1-1V8H17Zm-3-1a1,1,0,0,0,1-1V11a1,1,0,0,0-2,0v6A1,1,0,0,0,14,18Z"/></svg>'
                         list += '            </a>'
                         list += '        </div>'
@@ -634,7 +888,7 @@ dashboard, backoffice
                 $('#tbodyLink').html(list)
             },
             error: function(errors) {
-                console.log(errors)
+                //console.log(errors)
             }
         })
     }
@@ -690,6 +944,120 @@ dashboard, backoffice
                 },
                 close: function() {
                     $('#idDel').val();
+                }
+            }
+        });
+    }
+
+    window.ActivateLink = function(id) {
+        $.magnificPopup.open({
+            items: {
+                src: '#modal-activate'
+            },
+            type: 'inline',
+            fixedContentPos: true,
+            fixedBgPos: true,
+            overflowY: 'auto',
+            preloader: false,
+            focus: '#username',
+            modal: false,
+            removalDelay: 300,
+            mainClass: 'my-mfp-zoom-in',
+            closeBtnInside: true,
+            callbacks: {
+                open: function() {
+                    if (!isNaN(id) && id != '') {
+                        $('#idStatus').val(id)
+                    }
+                },
+                close: function() {
+                    $('#idStatus').val();
+                }
+            }
+        });
+    }
+
+    $('#btnLinkStatus').on('click', function(event) {
+        event.preventDefault()
+        access_token = getCookie('access_token')
+        var id = $('#idStatus').val()
+
+        $.ajax({
+            url: `/movies/download-links/{{ id }}/activate/`,
+            method: 'GET',
+            dataType: 'JSON',
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token,
+                'idLink': id
+            },
+            success: function(data) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: data,
+                    showConfirmButton: false,
+                    timer: 500
+                })
+                $.magnificPopup.close()
+                fetchLinks()
+            },
+            error: function(errors) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: errors.responseJSON.detail,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                $.magnificPopup.close()
+            }
+        })
+    })
+
+    window.updateLink = function(id) {
+        $.magnificPopup.open({
+            items: {
+                src: '#modal-download-link'
+            },
+            type: 'inline',
+            fixedContentPos: true,
+            fixedBgPos: true,
+            overflowY: 'auto',
+            preloader: false,
+            focus: '#username',
+            modal: false,
+            removalDelay: 300,
+            mainClass: 'my-mfp-zoom-in',
+            closeBtnInside: true,
+            callbacks: {
+                open: function() {
+                    if (!isNaN(id) && id != '') {
+                        access_token = getCookie('access_token')
+
+                        $.ajax({
+                            url: `/movies/{{ id }}/download-links/`,
+                            method: 'GET',
+                            dataType: 'JSON',
+                            headers: {
+                                'accept': 'application/json',
+                                'Authorization': 'Bearer ' + access_token,
+                                'idLink': id
+                            },
+                            success: function(data) {
+                                $('#linkId').val(id)
+                                $('#advertisement').val(data[0].advertisement)
+                                $('#link').val(data[0].link)
+                                $('#btnAddLink').css('display', 'none');
+                                $('#btnUpLink').css('display', 'initial');
+                            }
+                        })
+                    }
+                },
+                close: function() {
+                    $('#form-link')[0].reset();
+                    $('#error-advertisement').text('')
+                    $('#error-link').text('')
                 }
             }
         });
@@ -766,7 +1134,6 @@ dashboard, backoffice
                     showConfirmButton: false,
                     timer: 1500
                 })
-                console.log(errors)
             }
         })
     })
@@ -816,8 +1183,9 @@ dashboard, backoffice
             success: function(data) {
                 $('#form-slide')[0].reset();
                 $('#gallery1').text('Upload photos Slide');
-                $('#btnAddSlide').prop('disabled', false);
                 $('.spinner').remove();
+                fetchSlides()
+                $.magnificPopup.close()
                 Swal.fire({
                     position: 'top-end',
                     icon: 'success',
@@ -827,7 +1195,6 @@ dashboard, backoffice
                 })
             },
             error: function(errors) {
-                console.log(errors)
                 $('#btnAddSlide').prop('disabled', false);
                 $('.spinner').remove();
                 resetErrors();
@@ -840,7 +1207,6 @@ dashboard, backoffice
                             }
                         }
                     })
-                    $('#error-gallery').text('')
                     Swal.fire({
                         position: 'top-end',
                         icon: 'error',
@@ -889,19 +1255,19 @@ dashboard, backoffice
                 $('.spinner').remove();
             },
             success: function(data) {
-                $('#advertisement').val('')
-                $('#link').val('')
+                $('#form-link')[0].reset();
+                $('#error-advertisement').text('')
+                $('#error-link').text('')
                 fetchLinks()
                 Swal.fire({
                     position: 'top-end',
                     icon: 'success',
                     title: 'Link added successfully',
                     showConfirmButton: false,
-                    timer: 1000
+                    timer: 500
                 });
             },
             error: function(errors) {
-                console.log(errors);
                 $('#btnAddLink').prop('disabled', false);
                 $('.spinner').remove();
                 Swal.fire({
@@ -913,6 +1279,126 @@ dashboard, backoffice
                 });
             }
         });
-    });
+    })
+
+    $('#btnUpLink').on('click', function(event) {
+        event.preventDefault();
+        access_token = getCookie('access_token');
+        var id = $('#linkId').val()
+    
+        const formData = JSON.stringify({
+            advertisement: $('#advertisement').val(),
+            link: $('#link').val()
+        });
+
+        $.ajax({
+            url: `/movies/${id}/download-links/`,
+            method: 'PUT',
+            dataType: 'JSON',
+            contentType: 'application/json',
+            data: formData,
+            headers: {
+                'movieId': {{ id }},
+                'Authorization': 'Bearer ' + access_token
+            },
+            beforeSend: function() {
+                $('#btnUpLink').prop('disabled', true);
+                $('#btnUpLink').append('<div class="spinner"></div>');
+            },
+            complete: function() {
+                $('#btnUpLink').prop('disabled', false);
+                $('.spinner').remove();
+            },
+            success: function(data) {
+                $('#error-advertisement').text('')
+                $('#error-link').text('')
+                fetchLinks()
+                $.magnificPopup.close()
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: data,
+                    showConfirmButton: false,
+                    timer: 500
+                })
+            },
+            error: function(errors) {
+                $('#btnAddLink').prop('disabled', false);
+                $('.spinner').remove();
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Failed to add link',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        })
+    })
+
+    window.deleteLink = function(id) {
+        $.magnificPopup.open({
+            items: {
+                src: '#modal-link-delete'
+            },
+            type: 'inline',
+            fixedContentPos: true,
+            fixedBgPos: true,
+            overflowY: 'auto',
+            preloader: false,
+            focus: '#username',
+            modal: false,
+            removalDelay: 300,
+            mainClass: 'my-mfp-zoom-in',
+            closeBtnInside: true,
+            callbacks: {
+                open: function() {
+                    if (!isNaN(id) && id != '') {
+                        $('#idLinkDel').val(id)
+                    }
+                },
+                close: function() {
+                    $('#idLinkDel').val();
+                }
+            }
+        });
+    }
+
+    $('#btnLinkDel').on('click', function() {
+        event.preventDefault()
+        access_token = getCookie('access_token')
+        var id = $('#idLinkDel').val()
+
+        $.ajax({
+            url: `/movies/{{ id }}/download-links/`,
+            method: 'DELETE',
+            dataType: 'JSON',
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token,
+                'idlink': id
+            },
+            success: function(data) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: data,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                fetchLinks()
+                $.magnificPopup.close()
+            },
+            error: function(errors) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: errors.responseJSON.detail,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            }
+        })
+    })
 </script>
 {% endblock %}

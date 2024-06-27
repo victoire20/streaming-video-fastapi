@@ -19,10 +19,11 @@ class Genre(BaseModel):
         
         
 class GenreMovie(BaseModel):
-    genre: List[Genre]
+    genre: Genre
         
         
 class Langue(BaseModel):
+    id: int
     libelle: str
     
     
@@ -57,7 +58,7 @@ class MovieResponse(BaseModel):
     is_active: str
     created_at: datetime
     updated_at: Optional[datetime] = None
-    # genre_movie: GenreMovie
+    genre_movie: List[GenreMovie]
     download_links: Optional[List[DowloadLinks]] = None
     comments: Optional[List[Comments]] = None
         

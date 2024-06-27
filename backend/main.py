@@ -185,6 +185,15 @@ async def index_root(request: Request, response: Response):
         'add-movie.html', 
         context={'request': request, 'page': 'movies'}
     )
+    
+    
+@app.get('/{id}/update-movie')
+async def index_root(id: int, request: Request, response: Response):
+    await verify_cookies(request=request, response=response)
+    return templates.TemplateResponse(
+        'edit-movie.html', 
+        context={'request': request, 'page': 'movies', 'id': id}
+    )
 
 
 @app.get('/comments')
