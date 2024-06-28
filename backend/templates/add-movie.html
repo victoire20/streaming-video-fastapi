@@ -149,14 +149,14 @@ dashboard, backoffice
                             <div class="row">
                                 <div class="col-12 col-lg-4">
                                     <div class="form__gallery">
-                                        <label id="cover_player" for="form__cover-upload">Upload cover player</label>
+                                        <label id="cover_player" for="form__cover-upload">Upload cover player (1110 x 624)</label>
                                         <input data-name="#cover_player" id="form__cover-upload" name="cover_player" class="form__gallery-upload" type="file" accept=".png, .jpg, .jpeg">
                                         <span id="error-cover_player" style="color: red; font-size: small;"></span>
                                     </div>
                                 </div>
                                 <div class="col-12 col-lg-4">
                                     <div class="form__video">
-                                        <label id="movie1" for="form__video-upload">Upload video File</label>
+                                        <label id="movie1" for="form__video-upload">Upload video File (.zip or .rar)</label>
                                         <input data-name="#movie1" id="form__video-upload" name="zip_file" class="form__video-upload" type="file" accept=".rar, .zip">
                                         <span id="error-videos_list" style="color: red; font-size: small;"></span>
                                     </div>
@@ -190,6 +190,7 @@ dashboard, backoffice
     $(function() {
         getGenres()
         getLangues()
+        initUserData()
     })
 
     function getCookie(cname) {
@@ -206,6 +207,27 @@ dashboard, backoffice
             }
         }
         return "";
+    }
+
+    function initUserData() {
+        access_token = getCookie('access_token')
+
+        $.ajax({
+            url: '/users/me',
+            method: 'GET',
+            dataType: 'JSON',
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token
+            },
+            success: function(data) {
+                if(data.is_admin) {
+                    $('.role').text('Admin')
+                }
+                $('.userName').text(data.username)
+                $('.userName').attr('href', `/${data.id}/edit-user`)
+            }
+        })
     }
 
     function getGenres() {

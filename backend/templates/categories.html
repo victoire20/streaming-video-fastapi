@@ -158,6 +158,7 @@ dashboard, backoffice
 <script>
     $(function() {
         getGenres()
+        initUserData()
     })
 
     function getCookie(cname) {
@@ -174,6 +175,27 @@ dashboard, backoffice
             }
         }
         return "";
+    }
+
+    function initUserData() {
+        access_token = getCookie('access_token')
+
+        $.ajax({
+            url: '/users/me',
+            method: 'GET',
+            dataType: 'JSON',
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token
+            },
+            success: function(data) {
+                if(data.is_admin) {
+                    $('.role').text('Admin')
+                }
+                $('.userName').text(data.username)
+                $('.userName').attr('href', `/${data.id}/edit-user`)
+            }
+        })
     }
 
     $('#btn-add').on('click', function(event) {

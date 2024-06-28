@@ -1,0 +1,227 @@
+{% extends 'layouts/master.html' %}
+{% block description %}
+Back office du site
+{% endblock %}
+{% block keywords %}
+dashboard, backoffice
+{% endblock %}
+{% block author%}TI-GENERATION{% endblock %}
+{% block title %}ZoneAnimee | Dashboard{% endblock %}
+
+
+<!-- header -->
+{% include 'layouts/header.html' %}
+<!-- end header -->
+
+<!-- sidebar -->
+{% include 'layouts/sidebar.html' %}
+<!-- end sidebar -->
+{% block content %}
+
+<style>
+    .profile__content {
+        height: 100% !important;
+    }
+
+    .profile__action {
+        width: 150px !important;
+        height: 150px !important;
+    }
+</style>
+
+<main class="main">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- main title -->
+            <div class="col-12">
+                <div class="main__title">
+                    <h2>File Management</h2>
+
+                    <span class="main__title-stat" id="nbrFolder"></span>
+
+                    <div class="main__title-wrap">
+                        <!-- filter sort -->
+                        <div class="filter" id="filter__sort">
+                            <span class="filter__item-label">Sort by:</span>
+
+                            <div class="filter__item-btn dropdown-toggle" role="navigation" id="filter-sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <input type="button" value="Date created">
+                                <span></span>
+                            </div>
+
+                            <ul class="filter__item-menu dropdown-menu scrollbar-dropdown" aria-labelledby="filter-sort">
+                                <li>Date created</li>
+                                <li>Rating</li>
+                            </ul>
+                        </div>
+                        <!-- end filter sort -->
+
+                        <!-- search -->
+                        <form action="#" class="main__title-form">
+                            <input type="text" placeholder="Key word..">
+                            <button type="button">
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8.25998" cy="8.25995" r="7.48191" stroke="#2F80ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></circle><path d="M13.4637 13.8523L16.3971 16.778" stroke="#2F80ED" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                            </button>
+                        </form>
+                        <!-- end search -->
+                    </div>
+                </div>
+            </div>
+            <!-- end main title -->
+
+            <!-- File List / Media Doc -->
+            <div id="mediaFolder" class="col-12 col-lg-9" style="display: none;">
+                <div class="profile__content" id="mediaFolder-content">
+                                 
+                </div>
+            </div>
+            <!-- end File List / Media Doc -->
+
+            <!-- File List / Folder Choose Doc -->
+            <div id="mediaContent" class="col-12 col-lg-9" style="display: none;">
+                <div class="profile__content">
+                    <a href="#modal-add-eps" class="profile__action profile__action--edit open-modal" id="btn-eps-add-1">
+                        
+                        <span>Images</span>
+                    </a>                 
+                </div>
+            </div>
+            <!-- end File List / Folder Choose Doc -->
+
+            <!-- File Details -->
+            <div class="col-12 col-lg-3">
+                <div class="profile__content">
+                    <div class="form__img">
+                        <a href="">
+                            <svg style="color: white;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M3 19V6a1 1 0 0 1 1-1h4.032a1 1 0 0 1 .768.36l1.9 2.28a1 1 0 0 0 .768.36H16a1 1 0 0 1 1 1v1M3 19l3-8h15l-3 8H3Z"/>
+                            </svg>
+                        </a>
+                    </div>
+                    <label for="form__img-upload">
+                        Upload cover (190 x 270)
+                    </label>
+                </div>
+            </div>
+            <!-- end File Details -->
+        </div>
+    </div>
+</main>
+
+<!-- modal view -->
+<div id="modal-view" class="zoom-anim-dialog mfp-hide modal modal--view">
+    <div class="comments__autor">
+        <img class="comments__avatar" src="{{ url_for('static', path='/img/user.svg') }}" alt="">
+        <span class="comments__name">John Doe</span>
+        <span class="comments__time">30.08.2018, 17:53</span>
+    </div>
+    <p class="comments__text">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text.</p>
+    <div class="comments__actions">
+        <div class="comments__rate">
+            <span><svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11 7.3273V14.6537" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.6667 10.9905H7.33333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path fill-rule="evenodd" clip-rule="evenodd" d="M15.6857 1H6.31429C3.04762 1 1 3.31208 1 6.58516V15.4148C1 18.6879 3.0381 21 6.31429 21H15.6857C18.9619 21 21 18.6879 21 15.4148V6.58516C21 3.31208 18.9619 1 15.6857 1Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 12</span>
+
+            <span>7<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.6667 10.9905H7.33333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path fill-rule="evenodd" clip-rule="evenodd" d="M15.6857 1H6.31429C3.04762 1 1 3.31208 1 6.58516V15.4148C1 18.6879 3.0381 21 6.31429 21H15.6857C18.9619 21 21 18.6879 21 15.4148V6.58516C21 3.31208 18.9619 1 15.6857 1Z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+    </div>
+</div>
+<!-- end modal view -->
+
+<!-- modal delete -->
+<div id="modal-delete" class="zoom-anim-dialog mfp-hide modal">
+    <h6 class="modal__title">Comment delete</h6>
+
+    <p class="modal__text">Are you sure to permanently delete this comment?</p>
+
+    <div class="modal__btns">
+        <button class="modal__btn modal__btn--apply" type="button">Delete</button>
+        <button class="modal__btn modal__btn--dismiss" type="button">Dismiss</button>
+    </div>
+</div>
+<!-- end modal delete -->
+
+
+<script>
+    $(function() {
+        initUserData()
+        initMediaFolder()
+    })
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    function initUserData() {
+        access_token = getCookie('access_token')
+
+        $.ajax({
+            url: '/users/me',
+            method: 'GET',
+            dataType: 'JSON',
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token
+            },
+            success: function(data) {
+                if(data.is_admin) {
+                    $('.role').text('Admin')
+                }
+                $('.userName').text(data.username)
+                $('.userName').attr('href', `/${data.id}/edit-user`)
+            }
+        })
+    }
+
+    function initMediaFolder() {
+        access_token = getCookie('access_token')
+    
+        $.ajax({
+            url: '/filemanagers/',
+            method: 'GET',
+            dataType: 'JSON',
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token
+            },
+            success: function(data) {
+                var list = ''
+                if (data.folders && data.folders.length > 0) {
+                    $.each(data.folders, function(index, folder) {
+                        var folderData = JSON.stringify(folder).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+                        list += '<a role="button" onclick="showMediaDetail('+folderData +')" class="profile__action profile__action--edit open-modal">'
+                        list += '    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+                        list += '        <path d="M3 19V6a1 1 0 0 1 1-1h4.032a1 1 0 0 1 .768.36l1.9 2.28a1 1 0 0 0 .768.36H16a1 1 0 0 1 1 1v1M3 19l3-8h15l-3 8H3Z"/>'
+                        list += '    </svg>'
+                        list += '    <span>' + folder.folder_names + ' (' + folder.file_count + ' files)</span>'
+                        list += '</a>'
+                    })
+                } else {
+                    list = '<p>No folders found.</p>'
+                }
+                $('#mediaFolder').css('display', 'initial')
+                $('#mediaFolder-content').html(list)
+                $('#nbrFolder').text(data.folder_count + ' total')
+            },
+            error: function(error) {
+                $('#mediaFolder-content').html('<p>Failed to load folders. Please try again later.</p>')
+            }
+        })
+    }
+
+    function showMediaDetail(data) {
+        console.log(data)
+    }
+</script>
+
+{% endblock %}

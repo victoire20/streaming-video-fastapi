@@ -475,4 +475,48 @@ dashboard, backoffice
     </div>
 </main>
 
+
+<script>
+    $(function() {
+        initUserData()
+    })
+
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    function initUserData() {
+        access_token = getCookie('access_token')
+
+        $.ajax({
+            url: '/users/me',
+            method: 'GET',
+            dataType: 'JSON',
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token
+            },
+            success: function(data) {
+                if(data.is_admin) {
+                    $('.role').text('Admin')
+                }
+                $('.userName').text(data.username)
+                $('.userName').attr('href', `/${data.id}/edit-user`)
+            }
+        })
+    }
+</script>
+
 {% endblock %}

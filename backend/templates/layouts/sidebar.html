@@ -12,8 +12,8 @@
         </div>
 
         <div class="sidebar__user-title">
-            <span>Admin</span>
-            <p>John Doe</p>
+            <span class="role"></span>
+            <a class="userName"></a>
         </div>
 
         <button class="sidebar__user-btn" type="button">
@@ -82,13 +82,13 @@
         </li>
 
         <li class="sidebar__nav-item">
-            <a href="/comments" 
-               class="sidebar__nav-link {% if page == 'comments' %}sidebar__nav-link--active{% endif %}"
-            >
+            <a href="/file-management" 
+               class="sidebar__nav-link {% if page == 'file-management' %}sidebar__nav-link--active{% endif %}"
+            >              
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M8,11a1,1,0,1,0,1,1A1,1,0,0,0,8,11Zm4,0a1,1,0,1,0,1,1A1,1,0,0,0,12,11Zm4,0a1,1,0,1,0,1,1A1,1,0,0,0,16,11ZM12,2A10,10,0,0,0,2,12a9.89,9.89,0,0,0,2.26,6.33l-2,2a1,1,0,0,0-.21,1.09A1,1,0,0,0,3,22h9A10,10,0,0,0,12,2Zm0,18H5.41l.93-.93a1,1,0,0,0,.3-.71,1,1,0,0,0-.3-.7A8,8,0,1,1,12,20Z"/>
+                    <path d="M10 3v4a1 1 0 0 1-1 1H5m14-4v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1Z"/>
                 </svg> 
-                <span>Comments</span>
+                <span>File Management</span>
             </a>
         </li>
 
@@ -123,6 +123,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             var currentYear = new Date().getFullYear();
             document.getElementById('current-year').textContent = currentYear;
+
         });
     </script>
 </div>

@@ -497,6 +497,7 @@ dashboard, backoffice
         var userID = {{ id | default(0) | tojson | safe }};
         
         getUserData(userID)
+        initUserData()
         
 
         $('#profiletbtn').on('click', function(event) {
@@ -561,6 +562,27 @@ dashboard, backoffice
             }
         }
         return "";
+    }
+
+    function initUserData() {
+        access_token = getCookie('access_token')
+
+        $.ajax({
+            url: '/users/me',
+            method: 'GET',
+            dataType: 'JSON',
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token
+            },
+            success: function(data) {
+                if(data.is_admin) {
+                    $('.role').text('Admin')
+                }
+                $('.userName').text(data.username)
+                $('.userName').attr('href', `/${data.id}/edit-user`)
+            }
+        })
     }
 
     

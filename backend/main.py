@@ -196,7 +196,7 @@ async def index_root(id: int, request: Request, response: Response):
     )
 
 
-@app.get('/comments')
+@app.get('/file-management')
 async def index_root(request: Request, response: Response):
     if not request.cookies.get('access_token'):
         response.set_cookie(
@@ -208,8 +208,8 @@ async def index_root(request: Request, response: Response):
         )
         return RedirectResponse(url='/login', headers=response.headers)
     return templates.TemplateResponse(
-        'comments.html', 
-        context={'request': request, 'page': 'comments'}
+        'file-management.html', 
+        context={'request': request, 'page': 'file-management'}
     )
 
 

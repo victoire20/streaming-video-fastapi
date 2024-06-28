@@ -16,6 +16,7 @@ from user import router as user_router
 from genre import router as genre_router
 from langue import router as langue_router
 from movie import router as movie_router
+from filemanager import router as filemanager_router
 
 from typing import Optional
 
@@ -53,6 +54,7 @@ app.include_router(user_router.router)
 app.include_router(genre_router.router)
 app.include_router(langue_router.router)
 app.include_router(movie_router.router)
+app.include_router(filemanager_router.router)
 
 
 CHUNK_SIZE = 10*1024*1024 # 10 MB

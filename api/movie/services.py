@@ -3,6 +3,7 @@ from sqlalchemy import select, func, text, or_, and_
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from PIL import Image
+from datetime import datetime
 import io, os, time, math, aiofiles, py7zr, zipfile, shutil
 
 from core.models import Movie, GenreMovie, Genre, Langue, Comment, DownloadLink, Slide
@@ -547,6 +548,7 @@ async def update_movie(
         background.add_task(save_large_file(zip_file, zip_filename, BASE_MEDIA_URL))
         movie.zip_file = zip_filename 
         
+    movie.updated_at = datetime.now()
     db.commit()
     db.refresh(movie)
     return 'Movie is updated successfully!'
@@ -564,7 +566,7 @@ async def add_episodes(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='This identifier does not belong to any film in the database!'
         )
-        
+    movie.updated_at = datetime.now()   
     movie_file = os.path.join(BASE_MEDIA_URL, 'videos', movie.zip_file)
     
     if not os.path.isfile(movie_file):
@@ -599,6 +601,8 @@ async def add_episodes(
             # Remove the temporary file
             os.remove(episode_path)
             
+    db.commit()
+    db.refresh(movie)        
     return 'Episodes added successfully.'
 
 

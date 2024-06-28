@@ -133,10 +133,10 @@ dashboard, backoffice
 </div>
 <!-- end modal delete -->
 
-
 <script>
     $(function() {
         getMovies()
+        initUserData()
     })
 
     function getCookie(cname) {
@@ -153,6 +153,27 @@ dashboard, backoffice
             }
         }
         return "";
+    }
+
+    function initUserData() {
+        access_token = getCookie('access_token')
+
+        $.ajax({
+            url: '/users/me',
+            method: 'GET',
+            dataType: 'JSON',
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token
+            },
+            success: function(data) {
+                if(data.is_admin) {
+                    $('.role').text('Admin')
+                }
+                $('.userName').text(data.username)
+                $('.userName').attr('href', `/${data.id}/edit-user`)
+            }
+        })
     }
 
     function getMovies(page_number = 1, limit = 10, sort = null, filter = null) {
