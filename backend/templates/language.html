@@ -548,7 +548,6 @@ dashboard, backoffice
             },
             error: function(errors) {
                 $('.spinner').remove();
-                console.log(errors)
                 if(errors.status === 422) {
                     $.each(errors.responseJSON.detail, function(key, value) {
                         if (value.loc && value.loc.includes('libelle')) {
