@@ -103,7 +103,7 @@ dashboard, backoffice
     </div>
 </main>
 
-<!-- modal delete -->
+<!-- modal delete folder -->
 <div id="modal-delete" class="zoom-anim-dialog mfp-hide modal">
     <h6 class="modal__title"></h6>
     <input type="hidden" id="folder_name">
@@ -115,7 +115,22 @@ dashboard, backoffice
         <button class="modal__btn modal__btn--apply" id="folderDelBtn" type="button">Delete</button>
     </div>
 </div>
-<!-- end modal delete -->
+<!-- end modal delete folder -->
+
+<!-- modal delete file -->
+<div id="modal-delete-file" class="zoom-anim-dialog mfp-hide modal">
+    <h6 class="modal__title"></h6>
+    <input type="hidden" id="file_name">
+    <input type="hidden" id="folder_path">
+
+    <p class="modal__text"></p>
+
+    <div class="modal__btns">
+        <button class="modal__btn modal__btn--dismiss" type="button">Dismiss</button>
+        <button class="modal__btn modal__btn--apply" id="fileDelBtn" type="button">Delete</button>
+    </div>
+</div>
+<!-- end modal delete file -->
 
 
 <script>
@@ -225,7 +240,8 @@ dashboard, backoffice
         btnDetails += '</div>'
         btnDetails += '<div class="col-6 d-flex justify-content-end">'
         var filesData = JSON.stringify(data.files).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-        btnDetails += '    <a role="button" onclick="openFolder(\''+ filesData +'\')" class="form__btn" id="btn-up">Open</a>'
+        var folderName = JSON.stringify(data.files).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+        btnDetails += '    <a role="button" onclick="openFolder(\'' + filesData + '\', \'' + folderName + '\')" class="form__btn" id="btn-up">Open</a>'
         btnDetails += '</div>'
     
         $('.content_details').fadeIn()
@@ -252,7 +268,7 @@ dashboard, backoffice
             closeBtnInside: true,
             callbacks: {
                 open: function() {
-                    $('.modal__title').text('File deletion');
+                    $('.modal__title').text('Document deletion');
                     $('.modal__text').text('Are you sure to permanently delete this '+folderName+' folder?')
                     $('#folder_name').val(folderName)
                 },
@@ -271,16 +287,14 @@ dashboard, backoffice
         var folderName = $('#folder_name').val()
 
         $.ajax({
-            url: `/filemanagers/${folderName}/`,
+            url: `/filemanagers/${folderName}/delete-folder`,
             method: 'GET',
             dataType: 'JSON',
             headers: {
                 'accept': 'application/json',
                 'Authorization': 'Bearer ' + access_token
             },
-            success: function(data) {
-                console.log(data)
-        
+            success: function(data) {        
                 $.magnificPopup.close()
         
                 $('.content_details').fadeOut()
@@ -289,15 +303,30 @@ dashboard, backoffice
                 $('.page-404__title').html('<path style="fill: rgb(234, 217, 217);" d="M3 19V6a1 1 0 0 1 1-1h4.032a1 1 0 0 1 .768.36l1.9 2.28a1 1 0 0 0 .768.36H16a1 1 0 0 1 1 1v1M3 19l3-8h15l-3 8H3Z"/>')
                 $('.content_details').html()
                 initMediaFolder()
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: data.details,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
             },
             error: function(errors) {
-                console.log(errors)
+                $.magnificPopup.close()
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: errors.responseJSON.detail,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
             }
         })
     })
 
-    window.openFolder = function(filesData) {
+    window.openFolder = function(filesData, folderName) {
         var files = JSON.parse(filesData.replace(/&quot;/g, '"').replace(/&apos;/g, "'"));
+        var folder = JSON.parse(folderName.replace(/&quot;/g, '"').replace(/&apos;/g, "'"));
         var list = '';
         
         $('.content_details').fadeOut()
@@ -308,7 +337,7 @@ dashboard, backoffice
     
         for (var i = 0; i < files.length; i++) {
             list += '<div class="col-6 col-md-4 col-lg-3 mb-4">';
-            list += '    <a role="button" onclick="showFileDetail(\'' + files[i] + '\')" class="profile__action profile__action--edit open-modal">';
+            list += '    <a role="button" onclick="showFileDetail(\'' + files[i] + '\', \'' + folder + '\')" class="profile__action profile__action--edit open-modal">';
             list += '        <div class="icon-wrapper">';
             list += '            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">';
             if (files[i].includes('.jpeg') || files[i].includes('.jpg') || files[i].includes('.png')) {
@@ -332,7 +361,7 @@ dashboard, backoffice
         $('#nbrFolder').text(files.length + ' total');
     }
 
-    window.showFileDetail = function(fileName) {
+    window.showFileDetail = function(fileName, folder) {
         access_token = getCookie('access_token')
         
         $.ajax({
@@ -378,7 +407,7 @@ dashboard, backoffice
                 btnDetails += '</div>'
                 btnDetails += '<div class="col-6 d-flex justify-content-end">'
                 btnDetails += '    <button id="btn-save" class="modal__btn modal__btn--apply" type="button" style="display: none;">Save</button>'
-                btnDetails += '    <a role="button" onclick="deleteFile(\''+fileName+'\')" class="form__btn" style="background: red">Delete</a>'
+                btnDetails += '    <a role="button" onclick="deleteFile(\''+fileName+'\', \'' + folder + '\')" class="form__btn" style="background: red">Delete</a>'
                 btnDetails += '</div>'
                 } else {
                     btnDetails += '<div class="col-12 d-flex justify-content-middle">'
@@ -393,6 +422,83 @@ dashboard, backoffice
             }
         })
     }
+
+    window.deleteFile = function(fileName, folder) {
+        $.magnificPopup.open({
+            items: {
+                src: '#modal-delete-file'
+            },
+            type: 'inline',
+            fixedContentPos: true,
+            fixedBgPos: true,
+            overflowY: 'auto',
+            preloader: false,
+            focus: '#username',
+            modal: false,
+            removalDelay: 300,
+            mainClass: 'my-mfp-zoom-in',
+            closeBtnInside: true,
+            callbacks: {
+                open: function() {
+                    $('.modal__title').text('File deletion');
+                    $('.modal__text').text('Are you sure to permanently delete this '+fileName+' folder?')
+                    $('#file_name').val(fileName)
+                    $('#folder_path').val(folder)
+                },
+                close: function() {
+                    $('.modal__title').text('');
+                    $('.modal__text').text('')
+                    $('#file_name').val('')
+                    $('#folder_path').val('')
+                }
+            }
+        });
+    }
+
+    $('#fileDelBtn').on('click', function(event) {
+        event.preventDefault()
+        access_token = getCookie('access_token')
+        var fileName = $('#file_name').val()
+        var folder_name = $('#folder_path').val()
+
+        $.ajax({
+            url: `/filemanagers/${fileName}/delete-file`,
+            method: 'GET',
+            dataType: 'JSON',
+            headers: {
+                'accept': 'application/json',
+                'Authorization': 'Bearer ' + access_token,
+                'folderName': folder_name
+            },
+            success: function(data) {        
+                $.magnificPopup.close()
+        
+                $('.content_details').fadeOut()
+                $('.btn-details').fadeOut()
+                $('.btn-details').html()
+                $('.page-404__title').html('<path style="fill: rgb(234, 217, 217);" d="M3 19V6a1 1 0 0 1 1-1h4.032a1 1 0 0 1 .768.36l1.9 2.28a1 1 0 0 0 .768.36H16a1 1 0 0 1 1 1v1M3 19l3-8h15l-3 8H3Z"/>')
+                $('.content_details').html()
+                initMediaFolder()
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: data.details,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            },
+            error: function(errors) {
+                $.magnificPopup.close()
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: errors.responseJSON.detail,
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+            }
+        })
+    })
 </script>
 
 {% endblock %}

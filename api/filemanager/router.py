@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends, Request, HTTPException, Header, 
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import or_
 from core.database import get_db
-from core.models import Movie
+from core.models import Movie, Slide
 from typing import Optional, List
 import os
 
@@ -68,9 +68,9 @@ async def get_file_details(filename: str, db: Session = Depends(get_db)):
     return {'is_used': False}
 
 
-@router.get('/{foldername}/', status_code=status.HTTP_202_ACCEPTED)
+@router.get('/{foldername}/delete-folder', status_code=status.HTTP_202_ACCEPTED)
 async def delete_folder(foldername: str):
-    folder_path = os.path.join(BASE_MEDIA_URL, foldername)
+    folder_path = os.path.join(BASE_MEDIA_URL, foldername.lower())
     
     if not os.path.exists(folder_path):
         raise HTTPException(
@@ -93,3 +93,65 @@ async def delete_folder(foldername: str):
         )
         
     return {'details': f'The folder {foldername} has been successfully deleted.'}
+
+
+@router.get('/{fileName}/delete-file', status_code=status.HTTP_202_ACCEPTED)
+async def delete_file(fileName: str, folderName: str = Header(...), db: Session = Depends(get_db)):
+    # Ensure the folder name is sanitized and doesn't contain any unexpected characters
+    if folderName not in ['videos', 'images', 'slides', 'slide']:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid folder name: {folderName}"
+        )
+
+    # Construct the path URL using the folderName
+    path_url = os.path.join(BASE_MEDIA_URL, folderName)
+    file_path = os.path.join(path_url, fileName.lower())
+
+    # Check if the file is being used in the database
+    if folderName in ['videos', 'images']:
+        data = (
+            db.query(Movie)
+            .filter(or_(
+                    Movie.cover_image == fileName.lower(), 
+                    Movie.cover_player == fileName.lower(),
+                    Movie.zip_file == fileName.lower()
+                ))
+            .first()
+        )
+        if data:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='This image is used in the movie table'
+            )
+            
+    if folderName in ['slides', 'slide']:
+        if db.query(Slide).filter(Slide.img == fileName.lower()).first():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='This image is used in the slide table'
+            )
+    
+    # Check if the file exists
+    if not os.path.exists(file_path):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f'The file {fileName} does not exist.'
+        )
+        
+    # Check if the directory is empty
+    if os.path.isdir(file_path) and os.listdir(file_path):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f'The folder {fileName} is not empty.'
+        )
+        
+    try:
+        os.remove(file_path)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f'An error occurred while deleting the file: {e}'
+        )
+        
+    return {'details': f'The file {fileName} has been successfully deleted.'}
