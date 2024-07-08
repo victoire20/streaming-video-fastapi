@@ -1,5 +1,4 @@
 from fastapi import HTTPException, status, UploadFile, Request, BackgroundTasks
-from sqlalchemy import select, func, text, or_, and_
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from PIL import Image
@@ -7,22 +6,11 @@ from datetime import datetime
 import io, os, time, math, aiofiles, py7zr, zipfile, shutil
 
 from core.models import Movie, GenreMovie, Genre, Langue, Comment, DownloadLink, Slide
-from movie import responses
 
 
 BASE_MEDIA_URL = "./media"
 TEMP_DIR = os.path.join(BASE_MEDIA_URL, 'temp')
 CHUNK_SIZE = 1024 * 1024 # 1 MB chunks, adjust as needed
-
-
-# Fonction pour convertir le tri
-def convert_sort(sort: str) -> str:
-    return ','.join(sort.split('-'))
-
-
-# Function to convert columns
-def convert_columns(columns: str) -> List:
-    return list(map(lambda x: getattr(Movie, x), columns.split('-')))
 
 
 def get_image_dimensions(image_data: bytes):
@@ -243,108 +231,9 @@ async def create_movie(
         
     return "Movie created successfully."
 
-async def get_movies(
-    request: Request, 
-    page: int, 
-    limit: int, 
-    db: Session,
-    columns: Optional[str] = None, 
-    sort: Optional[str] = None, 
-    filter: Optional[str] = None
-):
-    criteria_list = []
-
-    default_columns = [
-        Movie.id, 
-        Movie.title, 
-        Movie.cover_image,
-        Movie.views,
-        Movie.is_active,
-        Movie.release_year,
-        Movie.running_time,
-        Movie.langueId,
-        Movie.age_limit,
-        Movie.movie_type,
-        Movie.rate,
-        Movie.created_at,
-        Movie.updated_at
-    ]
+async def get_movies(request: Request, db: Session):
+    return db.query(Movie).all()
     
-    if columns and columns != "all":
-        selected_columns = convert_columns(columns)
-        if not selected_columns:
-            selected_columns = default_columns
-    else:
-        selected_columns = default_columns
-        
-    query = select(*selected_columns).select_from(Movie)
-
-    if filter and filter != "null":
-        criteria = dict(x.split("*") for x in filter.split('-'))
-        for attr, value in criteria.items():
-            _attr = getattr(Movie, attr)
-            search = "%{}%".format(value)
-            criteria_list.append(_attr.like(search))
-        query = query.where(or_(*criteria_list))
-    
-    if sort and sort != "null":
-        query = query.order_by(text(convert_sort(sort)))
-
-    count_query = select(func.count()).select_from(Movie).where(
-        or_(*criteria_list) if criteria_list else True
-    )
-    total_record = (db.execute(count_query)).scalar() or 0
-    
-    total_page = math.ceil(total_record / limit)
-    offset_page = (page - 1) * limit
-
-    query = query.offset(offset_page).limit(limit)
-    
-    result = db.execute(query)
-    all_movies = result.fetchall()
-
-    results = []
-    for row in all_movies:
-        movie_data = {}
-        for col in selected_columns:
-            # Accéder directement à l'attribut de la ligne
-            movie_data[col.name] = getattr(row, col.name)
-            
-        movie_language = db.query(Langue).filter(Langue.id == row.langueId).first()
-        movie_genres = db.query(GenreMovie).filter(GenreMovie.movieId == row.id).all()
-        genre_data = []
-        for g in movie_genres:
-            genre = db.query(Genre).filter(Genre.id == g.genreId).first()
-            genre_data.append({
-                'id': genre.id,
-                'libelle': genre.libelle
-            })
-        
-        # comments = db.query(Comment).filter(Comment.userId == row.id).all()
-        # movie_data['comments_count'] = len(comments)
-        
-        # favorites = db.query(Favorite).filter(Favorite.userId == row.id).all()
-        # movie_data['favorites_count'] = len(favorites)
-        
-        # movie_data['comments'] = comments
-        # movie_data['favorites'] = favorites
-        
-        movie_data['language'] = {
-            'id': movie_language.id,
-            'libelle': movie_language.libelle.title()
-        }
-        movie_data['genres'] = genre_data
-        
-        results.append(movie_data)
-
-    return responses.PaginatedResponse(
-        page_number=page,
-        page_size=limit,
-        total_pages=total_page,
-        total_record=total_record,
-        contents=results
-    )
-
 
 async def get_movie(id: int , db: Session) -> Movie:
     movie = db.query(Movie).filter(Movie.id == id).first()

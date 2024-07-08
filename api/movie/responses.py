@@ -61,11 +61,3 @@ class MovieResponse(BaseModel):
     genre_movie: List[GenreMovie]
     download_links: Optional[List[DowloadLinks]] = None
     comments: Optional[List[Comments]] = None
-        
-        
-class PaginatedResponse(GenericModel, Generic[T]):
-    page_number: int
-    page_size: int
-    total_pages: int
-    total_record: int
-    contents: List[T]

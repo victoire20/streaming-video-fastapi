@@ -22,28 +22,9 @@ async def get_me(request: Request):
     return request.user
 
 
-@router.get('/', response_model=responses.PaginatedResponse, status_code=status.HTTP_200_OK)
-async def get_users(
-    request: Request,
-    page: int = Header(1),
-    limit: int = Header(10, gt=0, le=100),
-    columns: str = Header(None, alias="columns"),
-    sort: str = Header(None, alias='sort'),
-    filter: str = Header(None, alias='filter'),
-    db: Session = Depends(get_db),
-):
-    if not columns:
-        columns = 'id-email-username-registered_at-is_admin-is_active-is_verified-first_connection-last_connection'
-    
-    return await services.get_users(
-        request=request, 
-        page=page, 
-        limit=limit, 
-        columns=columns, 
-        sort=sort, 
-        filter=filter, 
-        db=db
-    )
+@router.get('/', response_model=List[responses.User], status_code=status.HTTP_200_OK)
+async def get_users(request: Request, db: Session = Depends(get_db)):
+    return await services.get_users(request=request, db=db)
 
 
 @router.get('/{id}/', response_model=responses.User, status_code=status.HTTP_200_OK)

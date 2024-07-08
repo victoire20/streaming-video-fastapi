@@ -18,25 +18,8 @@ async def create_language(request: schemas.Language, db: Session = Depends(get_d
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def get_languages(
-    request: Request,
-    page: int = Header(1),
-    limit: int = Header(10, gt=0, le=100),
-    columns: str = Header(None, alias='columns'),
-    sort: str = Header(None, alias='sort'),
-    filter: str = Header(None, alias='filter'),
-    db: Session = Depends(get_db)
-):
-    columns = 'id-libelle-is_active-created_at-updated_at'
-    return await services.get_languages(
-        request=request, 
-        page=page, 
-        limit=limit, 
-        columns=columns,
-        sort=sort, 
-        filter=filter, 
-        db=db
-    )
+async def get_languages(request: Request, db: Session = Depends(get_db)):
+    return await services.get_languages(request=request, db=db)
 
 
 @router.get('/{id}/', status_code=status.HTTP_200_OK)

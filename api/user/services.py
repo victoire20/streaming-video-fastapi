@@ -1,5 +1,4 @@
 from fastapi import HTTPException, status, Request
-from sqlalchemy import select, func, text, or_
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
@@ -7,99 +6,21 @@ from user import responses
 from core.security import get_password_hash
 from core.models import User, Comment, Favorite
 
-import math
 
-
-# Fonction pour convertir le tri
-def convert_sort(sort: str) -> str:
-    return ','.join(sort.split('-'))
-
-
-# Function to convert columns
-def convert_columns(columns: str) -> List:
-    return list(map(lambda x: getattr(User, x), columns.split('-')))
-
-
-async def get_users(
-    request: Request, 
-    page: int, 
-    limit: int, 
-    db: Session,
-    columns: Optional[str] = None, 
-    sort: Optional[str] = None, 
-    filter: Optional[str] = None
-):
-    criteria_list = []
-
-    default_columns = [
-        User.id, 
-        User.email, 
-        User.username,
-        User.is_admin,
-        User.is_active,
-        User.first_connection,
-        User.last_connection,
-        User.registered_at
-    ]
-
-    if columns and columns != "all":
-        selected_columns = convert_columns(columns)
-        if not selected_columns:
-            selected_columns = default_columns
-    else:
-        selected_columns = default_columns
-
-    query = select(*selected_columns).filter(User.id != request.user.id).select_from(User)
-
-    if filter and filter != "null":
-        criteria = dict(x.split("*") for x in filter.split('-'))
-        for attr, value in criteria.items():
-            _attr = getattr(User, attr)
-            search = "%{}%".format(value)
-            criteria_list.append(_attr.like(search))
-        query = query.where(or_(*criteria_list))
-    
-    if sort and sort != "null":
-        query = query.order_by(text(convert_sort(sort)))
-
-    count_query = select(func.count()).select_from(User).where(
-        or_(*criteria_list) if criteria_list else True
-    )
-    total_record = (db.execute(count_query)).scalar() or 0
-
-    total_page = math.ceil(total_record / limit)
-    offset_page = (page - 1) * limit
-
-    query = query.offset(offset_page).limit(limit)
-    
-    result = db.execute(query)
-    all_users = result.fetchall()
-
-    results = []
-    for row in all_users:
-        user_data = {}
-        for col in selected_columns:
-            # Accéder directement à l'attribut de la ligne
-            user_data[col.name] = getattr(row, col.name)
+async def get_users(request: Request, db: Session):
+    if not request.user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='You don\'t have permission to execute this request!'
+        )
+    users = db.query(User).all()
+    result = []
+    for user in users:
+        user_data = await get_user(id=user.id, db=db)
+        result.append(user_data)
         
-        comments = db.query(Comment).filter(Comment.userId == row.id).all()
-        user_data['comments_count'] = len(comments)
+    return result
         
-        favorites = db.query(Favorite).filter(Favorite.userId == row.id).all()
-        user_data['favorites_count'] = len(favorites)
-        
-        user_data['comments'] = comments
-        user_data['favorites'] = favorites
-        
-        results.append(user_data)
-
-    return responses.PaginatedResponse(
-        page_number=page,
-        page_size=limit,
-        total_pages=total_page,
-        total_record=total_record,
-        contents=results
-    )
 
 async def get_user(id: int, db: Session) -> responses.User:
     user = db.query(User).filter(User.id == id).first()
