@@ -156,7 +156,7 @@ async def index_root(request: Request, response: Response):
         )
         return RedirectResponse(url='/login', headers=response.headers)
     return templates.TemplateResponse(
-        'movies.html', 
+        'movie-pages/movies.html', 
         context={'request': request, 'page': 'movies'}
     )
     
@@ -173,7 +173,7 @@ async def index_root(id: int, request: Request, response: Response):
         )
         return RedirectResponse(url='/login', headers=response.headers)
     return templates.TemplateResponse(
-        'movie.html', 
+        'movie-pages/movie.html', 
         context={'request': request, 'page': 'movies', 'id': id}
     )
 
@@ -182,7 +182,7 @@ async def index_root(id: int, request: Request, response: Response):
 async def index_root(request: Request, response: Response):
     await verify_cookies(request=request, response=response)
     return templates.TemplateResponse(
-        'add-movie.html', 
+        'movie-pages/add-movie.html', 
         context={'request': request, 'page': 'movies'}
     )
     
@@ -191,7 +191,7 @@ async def index_root(request: Request, response: Response):
 async def index_root(id: int, request: Request, response: Response):
     await verify_cookies(request=request, response=response)
     return templates.TemplateResponse(
-        'edit-movie.html', 
+        'movie-pages/edit-movie.html', 
         context={'request': request, 'page': 'movies', 'id': id}
     )
 
@@ -227,6 +227,23 @@ async def index_root(request: Request, response: Response):
     return templates.TemplateResponse(
         'reviews.html', 
         context={'request': request, 'page': 'reviews'}
+    )
+
+
+@app.get('/permissions')
+async def index_root(request: Request, response: Response):
+    if not request.cookies.get('access_token'):
+        response.set_cookie(
+            key='error_message', 
+            value='Your session has expired! Please log in again!', 
+            httponly=True,
+            expires=2,  # 2 secondes
+            max_age=2  # 2 secondes
+        )
+        return RedirectResponse(url='/login', headers=response.headers)
+    return templates.TemplateResponse(
+        'permissions.html', 
+        context={'request': request, 'page': 'permissions'}
     )
 
 

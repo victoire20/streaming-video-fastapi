@@ -13,9 +13,7 @@
   <meta name="DC.title" content="Streamit Simple | Responsive Bootstrap 5 Admin Dashboard Template">
   <!-- Favicon -->
   <link rel="shortcut icon" href="https://templates.iqonic.design/streamit-dist/dashboard/html/assets/images/favicon.ico">
-  <link rel="stylesheet" href="{{ url_for('static', path='/assets/libs/font-awesome/6.4.2/css/all.min.css') }}"
-      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
-      crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="{{ url_for('static', path='/assets/css/all.min.css') }}" />
     <script src="{{ url_for('static', path='/js/jquery-3.5.1.min.js' )}}"></script>
     <!-- Library / Plugin Css Build -->
     <link rel="stylesheet" href="{{ url_for('static', path='/assets/css/core/libs.min.css') }}">
@@ -200,6 +198,7 @@
                 });
             },
             error: function(errors) {
+                $('.spinner').remove();
                 $('#alert-danger').css('display', 'initial')
                 $('#alert-danger').addClass('show');
                 $('#alert-error-msg').text(errors.responseJSON.detail);

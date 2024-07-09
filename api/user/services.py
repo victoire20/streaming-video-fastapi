@@ -16,8 +16,9 @@ async def get_users(request: Request, db: Session):
     users = db.query(User).all()
     result = []
     for user in users:
-        user_data = await get_user(id=user.id, db=db)
-        result.append(user_data)
+        if user.id != request.user.id:
+            user_data = await get_user(id=user.id, db=db)
+            result.append(user_data)
         
     return result
         

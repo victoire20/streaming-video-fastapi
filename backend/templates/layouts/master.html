@@ -1,36 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-bs-theme="dark" data-bs-theme-color="default" dir="ltr">
 <head>
-	{% block head %}
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-	<!-- CSS -->
-	<link rel="stylesheet" href="{{ url_for('static', path='/css/bootstrap-reboot.min.css') }}">
-	<link rel="stylesheet" href="{{ url_for('static', path='/css/bootstrap-grid.min.css') }}">
-	<link rel="stylesheet" href="{{ url_for('static', path='/css/magnific-popup.css') }}">
-	<link rel="stylesheet" href="{{ url_for('static', path='/css/select2.min.css') }}">
-	<link rel="stylesheet" href="{{ url_for('static', path='/css/admin.css') }}">
-
-	<!-- Favicons -->
-	<link rel="icon" type="image/png" href="{{ url_for('static', path='/icon/favicon-32x32.png') }}" sizes="32x32">
-	<link rel="apple-touch-icon" href="{{ url_for('static', path='/icon/favicon-32x32.png') }}">
-
-	<!-- DataTable CSS -->
-	<link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css">
-	<link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.dataTables.css">
-
-	<meta name="description" content="{% block description %}{% endblock %}">
+    {% block head %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title data-setting="app_name" data-rightJoin="ZoneAnimee | Dashboard"> 
+        {% block title %}{% endblock %}
+    </title>
+    <meta name="description" content="{% block description %}{% endblock %}">
     <meta name="keywords" content="{% block keywords %}{% endblock %}">
     <meta name="author" content="{% block author %}{% endblock %}">
-	<script src="{{ url_for('static', path='/js/jquery-3.5.1.min.js' )}}"></script>
-	<!-- Include Lightbox2 CSS -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+    <meta name="DC.title" content="ZoneAnimee | Dashboard">
 
-    <script src="https://cdn.jsdelivr.net/npm/vast-player/dist/vast-player.min.js"></script>
-	<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.11.1/dist/sweetalert2.min.css" rel="stylesheet">
-	<script src="{{ url_for('static', path='/js/main.js' )}}"></script>
-	<style>
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ url_for('static', path='/assets/images/favicon.ico' )}}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/assets/css/all.min.css' )}}" />
+    <!-- Library / Plugin Css Build -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/assets/css/core/libs.min.css' )}}">
+    
+    <link rel="stylesheet" href="{{ url_for('static', path='/assets/vendor/sheperd/dist/css/sheperd.css' )}}">
+    
+    <!-- Flatpickr css -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/assets/vendor/flatpickr/dist/flatpickr.min.css' )}}">
+    
+    <!-- Sweetlaert2 css -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/assets/vendor/sweetalert2/dist/sweetalert2.min.css') }}">
+        
+    <!-- streamit Design System Css -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/assets/css/streamit.min848f.css?v=5.2.1' )}}">
+    
+    <!-- Custom Css -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/assets/css/custom.min848f.css?v=5.2.1' )}}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/assets/css/dashboard-custom.min848f.css?v=5.2.1' )}}">
+    
+    <!-- RTL Css -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/assets/css/rtl.min848f.css?v=5.2.1' )}}">
+    
+    <!-- Customizer Css -->
+    <link rel="stylesheet" href="{{ url_for('static', path='/assets/css/customizer.min848f.css?v=5.2.1' )}}">
+    
+    <link rel="stylesheet" href="{{ url_for('static', path='/assets/vendor/swiperSlider/swiper-bundle.min.css' )}}">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,100;1,300&amp;display=swap"
+        rel="stylesheet">
+    
+    <link rel="stylesheet" href="{{ url_for('static', path='/assets/vendor/select2/dist/css/select2.min.css' )}}"></head>
+    
+    <!-- JQuery JS -->
+    <script src="{{ url_for('static', path='/assets/js/jquery-3.5.1.min.js') }}"></script>
+
+    <style>
 		.spinner {
 			border: 4px solid rgba(0, 0, 0, 0.1);
 			border-left-color: #000;
@@ -42,54 +65,75 @@
 			margin-left: 10px;
 		}
 	</style>
-	<title>{% block title %}{% endblock %}</title>
-	{% endblock %}
-</head>
-<body>
+    {% endblock %}
+<body class="">
+<!-- loader Start -->
+<div id="loading">
+    <div class="loader simple-loader">
+        <div class="loader-body ">
+            <img src="{{ url_for('static', path='/assets/images/loader-unscreen.gif' )}}" class="image-loader img-fluid" />
+        </div>
+    </div>    
+</div>
+<!-- loader END -->
+{% include 'layouts/sidebar.html' %}
 
-	<!-- main content -->
+<main class="main-content">
+    {% include 'layouts/header.html' %}
+
 	{% block content %}{% endblock %}
-	<!-- end main content -->
 
-	<script>
-		function setCookie(name, value, seconds) {
-			var expires = "";
-			if (seconds) {
-				var date = new Date();
-				date.setTime(date.getTime() + (seconds * 1000));
-				expires = "; expires=" + date.toUTCString();
-			}
-			document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-		}
+	<!-- Footer Section Start -->
+    {% include 'layouts/footer.html' %}
+    <!-- Footer Section End -->
+</main>
 
-		function eraseCookie(name) {   
-			document.cookie = name + '=; Max-Age=-99999999; path=/';  
-		}
+<!-- Library Bundle Script -->
+<script src="{{ url_for('static', path='/assets/js/core/libs.min.js' )}}"></script>
+<!-- Plugin Scripts -->
+<!-- Tour plugin Start -->
+<script src="{{ url_for('static', path='/assets/vendor/sheperd/dist/js/sheperd.min.js' )}}"></script>
+<script src="{{ url_for('static', path='/assets/js/plugins/tour.js' )}}" defer></script>
 
-		$('.sidebar__user-btn').on('click', function() {
-			eraseCookie('access_token');
-			setCookie('error_message', 'You are successfully logged out', 5);
+<!-- Flatpickr Script -->
+<script src="{{ url_for('static', path='/assets/vendor/flatpickr/dist/flatpickr.min.js' )}}"></script>
+<script src="{{ url_for('static', path='/assets/js/plugins/flatpickr.js' )}}" defer></script>
 
-			setTimeout(function() {
-				window.location.href = '/login';
-			}, 100);
-		})
-	</script>
+<!-- Select2 Script -->
+<script src="{{ url_for('static', path='/assets/js/plugins/select2.js' )}}" defer></script>
 
-	<!-- Include LightGallery JS -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
-	
-	<!-- DataTable JS -->
-	<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
-	<script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
-	<script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.dataTables.js"></script>
+<!-- Slider-tab Script -->
+<script src="{{ url_for('static', path='/assets/js/plugins/slider-tabs.js' )}}"></script>
+    
+<!-- Sweet-alert Script -->
+<script src="{{ url_for('static', path='/assets/vendor/sweetalert2/dist/sweetalert2.min.js') }}" async></script>
+<script src="{{ url_for('static', path='/assets/js/plugins/sweet-alert.js') }}" defer></script>
 
-	<!-- JS -->
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.11.1/dist/sweetalert2.all.min.js"></script>
-	<script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js' )}}"></script>
-	<script src="{{ url_for('static', path='/js/jquery.magnific-popup.min.js' )}}"></script>
-	<script src="{{ url_for('static', path='/js/smooth-scrollbar.js' )}}"></script>
-	<script src="{{ url_for('static', path='/js/select2.min.js' )}}"></script>
-	<script src="{{ url_for('static', path='/js/admin.js' )}}"></script>
+<!-- SwiperSlider Script -->
+<script src="{{ url_for('static', path='/assets/vendor/swiperSlider/swiper-bundle.min.js' )}}"></script>
+<script src="{{ url_for('static', path='/assets/js/plugins/swiper-slider.js' )}}" defer></script>
+<!-- Lodash Utility -->
+<script src="{{ url_for('static', path='/assets/vendor/lodash/lodash.min.js' )}}"></script>
+<!-- Utilities Functions -->
+<script src="{{ url_for('static', path='/assets/js/iqonic-script/utility.min.js' )}}"></script>
+<!-- Settings Script -->
+<script src="{{ url_for('static', path='/assets/js/iqonic-script/setting.min.js' )}}"></script>
+<!-- Settings Init Script -->
+<script src="{{ url_for('static', path='/assets/js/setting-init.js' )}}"></script>
+<!-- External Library Bundle Script -->
+<script src="{{ url_for('static', path='/assets/js/core/external.min.js' )}}"></script>
+<!-- Widgetchart Script -->
+<script src="{{ url_for('static', path='/assets/js/charts/widgetcharts848f.js?v=5.2.1' )}}" defer></script>
+<!-- Dashboard Script -->
+<script src="{{ url_for('static', path='/assets/js/charts/dashboard848f.js?v=5.2.1' )}}" defer></script>
+<!-- qompacui Script -->
+<script src="{{ url_for('static', path='/assets/js/streamit848f.js?v=5.2.1' )}}" defer></script>
+<script src="{{ url_for('static', path='/assets/js/sidebar848f.js?v=5.2.1' )}}" defer></script>
+<script src="{{ url_for('static', path='/assets/js/chart-custom848f.js?v=5.2.1' )}}" defer></script>
+
+<script src="{{ url_for('static', path='/assets/js/plugins/select2848f.js?v=5.2.1' )}}" defer></script>
+
+<script src="{{ url_for('static', path='/assets/js/plugins/flatpickr848f.js?v=5.2.1' )}}" defer></script>
+
 </body>
 </html>

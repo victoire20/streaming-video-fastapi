@@ -1,0 +1,281 @@
+{% extends 'layouts/master.html' %}
+{% block description %}
+Back office du site
+{% endblock %}
+{% block keywords %}
+dashboard, backoffice
+{% endblock %}
+{% block author %}TI-GENERATION{% endblock %}
+{% block title %}ZoneAnimee | Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="content-inner container-fluid pb-0" id="page_layout">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card pb-3">
+                <div class="card-header border-bottom d-flex justify-content-between align-items-center py-3">
+                    <div class="d-flex align-items-center mt-3 gap-2">
+                        <div class="form-group mb-0">
+                            <select type="select" class="form-control select2-basic-multiple" placeholder="No Action">
+                                <option>No Action</option>
+                                <option>Status</option>
+                                <option>Delete</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary ">Apply</button>
+                    </div>
+                    <button id="newMovie" class="btn btn-primary mt-3" type="button" 
+                    >
+                        <i class="fa-solid fa-plus me-2"></i>Add Movie
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-view table-responsive pt-3 table-space">
+                        <table id="seasonTable" class="data-tables table custom-table movie_table" data-toggle="data-movie-table">
+                            <thead>
+                                <tr class="text-uppercase">
+                                    <th class="text-center">
+                                        <input type="checkbox" class="form-check-input" />
+                                    </th>
+                                    <th>Movie</th>
+                                    <th>Quality</th>
+                                    <th>Category</th>
+                                    <th>Publish Date</th>
+                                    <th>Movie Access</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    <!-- Add Movie -->
+    {% include 'movie-pages/add-movie.html' %}
+</div>
+
+    <script>
+        $(function() {
+            initMovieData()
+            getLanguages()
+            getGenres()
+        })
+
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        function initMovieData() {
+            access_token = getCookie('access_token')
+
+            if ($.fn.DataTable) {
+                if ($('[data-toggle="data-movie-table"]').length) {
+                    $('[data-toggle="data-movie-table"]').DataTable({
+                      "autoWidth": false,
+                      "dom": '<"row align-items-center"<"col-md-6" l><"col-md-6" f>><"table-responsive my-3" rt><"row align-items-center" <"col-md-6" i><"col-md-6" p>><"clear">',
+                      "ajax": {
+                        "url": "http://127.0.0.1:8000/movies/",
+                        "dataSrc": "",
+                        "headers": {
+                            'accept': 'application/json',
+                            'Authorization': 'Bearer ' + access_token
+                        }
+                      },
+                      "columns": [
+                        { "data": "id",
+                          "name": "id",
+                          "orderable": false,
+                          "className": "text-center",
+                          "render": function(data, type, row, meta) {
+                            return '<input type="checkbox" class="form-check-input" />'
+                          }
+                        },
+                        { "data": null,
+                          "name": "movie_infos",
+                          "orderable": false,
+                          "className": "text-center",
+                          "render": function(data, type, row, meta) {
+                            console.log(data)
+                            return (
+                                '<div class="d-flex">'+
+                                    '<img src="http://127.0.0.1:8000/media/images/'+data.cover_image+'" alt="'+data.title+'" class="rounded-2 avatar avatar-55 img-fluid" />'+
+                                    '<div class="d-flex flex-column ms-3 justify-content-center">'+
+                                        '<h6 class="text-capitalize">'+data.title+'</h6>'+
+                                        '<small>2h 21m</small>'+
+                                        '<small class="text-capitalize">(english, hindi)</small>'+
+                                    '</div>'+
+                                '</div>'
+                            )
+                          }
+                        },
+                        { "data": null,
+                          "name": 'libelle',
+                          "orderable": true, 
+                          "render": function(data, type, row, meta) {
+                            return '<small>480/720/1080</small>';
+                          }
+                        },
+                        { "data": null,
+                          "name": 'libelle',
+                          "orderable": true, 
+                          "render": function(data, type, row, meta) {
+                            return 'hello';
+                          }
+                        },
+                        { "data": null,
+                          "name": 'libelle',
+                          "orderable": true, 
+                          "render": function(data, type, row, meta) {
+                            return '<small>2010</small>';
+                          }
+                        },
+                        { "data": null,
+                          "name": 'libelle',
+                          "orderable": true, 
+                          "render": function(data, type, row, meta) {
+                            return 'world';
+                          }
+                        },
+                        { "data": null,
+                          "name": 'libelle',
+                          "orderable": true, 
+                          "render": function(data, type, row, meta) {
+                            return (
+                                '<div class="d-flex justify-content-between">'+
+                                    '<div class="form-check form-switch ms-2">'+
+                                        '<input class="form-check-input" type="checkbox"  />'+
+                                    '</div>'+
+                                '</div>'
+                            );
+                          }
+                        },
+                        { "data": null,
+                          "name": "action",
+                          "orderable": false,
+                          "render": function(data, type, row, meta) {
+                            return (
+                                '<div class="flex align-items-center list-user-action">' +
+                                    '<a class="btn btn-sm btn-icon btn-success rounded" data-bs-toggle="tooltip" data-placement="top" title="Add" href="#">' +
+                                        '<span class="btn-inner"><i class="fa-solid fa-user-plus fa-xs"></i></span>' +
+                                    '</a>' +
+                                    '<a class="btn btn-sm btn-icon btn-danger rounded delete-btn" data-bs-toggle="tooltip" data-placement="top" title="Delete" href="#">' +
+                                        '<span class="btn-inner"><i class="fa-solid fa-trash fa-xs"></i></span>' +
+                                    '</a>' +
+                                    '<a class="btn btn-sm btn-icon btn-danger rounded delete-btn" data-bs-toggle="tooltip" data-placement="top" title="Delete" href="#">' +
+                                        '<span class="btn-inner"><i class="fa-solid fa-trash fa-xs"></i></span>' +
+                                    '</a>' +
+                                '</div>'
+                            );
+                          }
+                        }
+                      ]
+                    });
+                }
+            }
+        }
+
+        function getLanguages() {
+            access_token = getCookie('access_token')
+            $.ajax({
+                url: `http://127.0.0.1:8000/languages/`,
+                method: 'GET',
+                dataType: 'JSON',
+                headers: {
+                    'accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + access_token
+                },
+                success: function(data) {
+                    var list = ''
+                    list += "<option value=''>Select Languages</option>"
+                    $.each(data, function(key, value) {
+                        if(value.is_active) {
+                            list += "<option value="+value.id+">"+value.libelle.toUpperCase()+"</option>"
+                        }
+                    })
+                    $('#langueId').html(list)
+                }
+            })
+        }
+
+        function getGenres() {
+            access_token = getCookie('access_token')
+            $.ajax({
+                url: `http://127.0.0.1:8000/genres/`,
+                method: 'GET',
+                dataType: 'JSON',
+                headers: {
+                    'accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + access_token
+                },
+                success: function(data) {
+                    var list = ''
+                    list += "<option value=''>Select Categories</option>"
+                    $.each(data, function(key, value) {
+                        if(value.is_active) {
+                            list += "<option value="+value.id+">"+value.libelle.toUpperCase()+"</option>"
+                        }
+                    })
+                    $('#genreId').html(list)
+                }
+            })
+        }
+
+        function darken_screen(yesno) {
+            if (yesno == true) {
+                if (document.querySelector('.screen-darken') !== null) {
+                document.querySelector('.screen-darken').classList.add('active')
+                }
+            }
+            else if (yesno == false) {
+                if (document.querySelector('.screen-darken') !== null) {
+                document.querySelector('.screen-darken').classList.remove('active')
+                }
+            }
+        }
+
+        function close_offcanvas() {
+            darken_screen(false);
+            if (document.querySelector('.mobile-offcanvas.show') !== null) {
+                document.querySelector('.mobile-offcanvas.show').classList.remove('show')
+                document.body.classList.remove('offcanvas-active')
+            }
+        }
+        function show_offcanvas(offcanvas_id) {
+            darken_screen(true);
+            if (document.getElementById(offcanvas_id) !== null) {
+                document.getElementById(offcanvas_id).classList.add('show')
+                document.body.classList.add('offcanvas-active')
+            }
+        }
+
+        $('#newMovie').on('click', function() {
+            show_offcanvas('season-offcanvas')
+        })
+
+        $('#btnClose').on('click', function() {
+            close_offcanvas()
+        })
+    </script>
+    
+{% endblock %}
