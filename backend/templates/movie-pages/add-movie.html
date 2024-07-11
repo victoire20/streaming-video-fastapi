@@ -4,43 +4,39 @@
             <h5 id="offcanvasRightLabel1">Add New Movie</h5>
         </div>
         <div class="offcanvas-body">
-            <form>
+            <form id="movieForm">
                 <div class="section-form">
+                    <!-- Movie Infos Div Start -->
                     <fieldset>
                         <legend>Movie</legend>
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="form-group px-3 ">
-                                    <label class="form-label flex-grow-1" for="Movie Name">
-                                        <strong>Movie Name</strong> <span class="text-danger">*</span>:
+                                    <label class="form-label flex-grow-1" for="title">
+                                        <strong>Movie Title</strong> <span class="text-danger">*</span>:
                                     </label>
-                                
-                                    <!-- textarea input -->
-                                    <!-- toggle switch -->
-                                    <!-- common inputs -->
-                                    <input id="Movie Name" type="text" class="form-control " placeholder="Enter Movie Name" value="" min=""
-                                       multiple="" />
+                                    <input id="title" name="title" type="text" class="form-control" placeholder="Enter Movie Title" />
+                                    <span style="color: #d9847a;" id="error-title"></span>
                                 </div>                            
                               </div>
                             <div class="col-sm-12">
                                 <div class="form-group px-3 ">
-                                    <label class="form-label flex-grow-1" for="Description">
+                                    <label class="form-label flex-grow-1" for="description">
                                         <strong>Description</strong> :
                                     </label>
-                                
-                                    <!-- textarea input -->
-                                    <textarea id="Description" class="form-control" placeholder="Description"></textarea>
-                                </div>                            </div>
+                                    <textarea id="description" name="description" class="form-control" placeholder="Description"></textarea>
+                                    <span style="color: #d9847a;" id="error-description"></span>
+                                </div>                            
+                            </div>
                             <div class="col-sm-6">
                                 <div class="form-group px-3">
-                                    <label class="form-label flex-grow-1" for="movie-access"><strong>Movie
-                                            Access:</strong></label>
-                                    <select id="movie-access" type="select" class="form-control select2-basic-multiple"
-                                        placeholder="select movie access">
-                                        <option>Free</option>
-                                        <option>standard</option>
-                                        <option>premium</option>
+                                    <label class="form-label flex-grow-1" for="genreId">
+                                        <strong>Categories:</strong>
+                                    </label>
+                                    <select id="genreId" name="genreId" type="select" class="form-control select2-basic-multiple" multiple>
+                                        
                                     </select>
+                                    <span style="color: #d9847a;" id="error-genreId"></span>
                                 </div>
                             </div>
                             <div class="col-sm-6">
@@ -48,149 +44,112 @@
                                     <label class="form-label flex-grow-1" for="langueId">
                                         <strong>Language:</strong>
                                     </label>
-                                    <select id="langueId" type="select" class="form-control select2-basic-multiple"
-                                        placeholder="select language">
+                                    <select id="langueId" name="langueId" type="select" class="form-control select2-basic-multiple" multiple>
                                         
                                     </select>
                                     <span style="color: #d9847a;" id="error-langueId"></span>
                                 </div>
                             </div>
-                            <div class="col-sm-12">
-                                <div class="form-group px-3">
-                                    <label class="form-label flex-grow-1" for="genreId">
-                                        <strong>Categories:</strong>
+                        </div>
+                        
+                        <div class="row mt-5">
+                            <div class="col-lg-3">
+                                <div class="form-group px-3 ">
+                                    <label class="form-label flex-grow-1" for="age_limit">
+                                        <strong>Limit Age</strong> :
                                     </label>
-                                    <select id="genreId" name="genreId" type="select" class="form-control select2-basic-multiple"
-                                        placeholder="select categories">
-                                        
-                                    </select>
-                                    <span style="color: #d9847a;" id="error-genreId"></span>
+                                    <input id="age_limit" type="text" class="form-control" placeholder="Limit Age"/>
+                                    <span style="color: #d9847a;" id="error-age_limit"></span>
+                                </div>                            
+                              </div>
+                            <div class="col-lg-3">
+                                <div class="form-group px-3">
+                                    <label class="form-label flex-grow-1" for="genres">
+                                        <strong>Release Year:</strong>
+                                    </label>
+                                    <input type="month" class="form-control" id="release_year" name="release_year" value="2024-12">
+                                    <span style="color: #d9847a;" id="error-release_year"></span>
                                 </div>
                             </div>
+                            <div class="col-lg-3">
+                                <div class="form-group px-3">
+                                    <label class="form-label flex-grow-1" for="publication_date">
+                                        <strong>Publice Date:</strong></label>
+                                    <input type="datetime-local" class="form-control" name="publication_date" id="publication_date"
+                                        value="2024-12-19T13:45:00">
+                                    <span style="color: #d9847a;" id="error-publication_date"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group px-3 ">
+                                    <label class="form-label flex-grow-1" for="running_time">
+                                        <strong>Duration</strong> :
+                                    </label>
+                                    <input id="running_time" name="running_time" type="time" class="form-control" id="exampleInputtime" value="13:45">
+                                    <span style="color: #d9847a;" id="error-running_time"></span>
+                                </div>                            
+                              </div>
+                        </div>
+                    </fieldset>
+                    <!-- Movie Infos Div End -->
+
+                    <!-- Movie Files Div Start -->
+                    <fieldset>
+                        <legend>Media</legend>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group px-3 ">
+                                    <label class="form-label flex-grow-1" for="cover_image">
+                                        <strong>Thumbnail (min: 190*270)</strong> <span class="text-danger">*</span>:
+                                    </label>
+                                    <input id="cover_image" name="cover_image" type="file" class="form-control" placeholder=""/>
+                                    <span style="color: #d9847a;" id="error-cover_image"></span>
+                                </div>                            
+                              </div>
+                            <div class="col-sm-6">
+                                <div class="form-group px-3 ">
+                                    <label class="form-label flex-grow-1" for="cover_player">
+                                        <strong>Poster (min: 1000*500)</strong> <span class="text-danger">*</span>:
+                                    </label>
+                                    <input id="cover_player" name="cover_player" type="file" class="form-control " placeholder=""/>
+                                    <span style="color: #d9847a;" id="error-cover_player"></span>
+                                </div>                            
+                              </div>
+                            <div class="col-sm-12">
+                                <div class="form-group px-3 ">
+                                    <label class="form-label flex-grow-1" for="trailer_url">
+                                        <strong>Trailer Url</strong> <span class="text-danger">*</span>:
+                                    </label>
+                                    <input type="url" class="form-control" id="trailer_url" name="trailer_url" placeholder="Enter Url">
+                                    <span style="color: #d9847a;" id="error-trailer_url"></span>
+                                </div>                            
+                              </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center my-4 px-3">
                             <h5 class="mb-0">
-                                <strong>Casts / Crews</strong>
-                            </h5>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cast-modal">
-                                <i class="fa-solid fa-square-plus me-2"></i>Add Cast / Crew
-                            </button>
-                            
-                            <div class="modal fade" id="cast-modal" tabindex="-1" role="dialog" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="cast-modal-label">Add Cast/Crew</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="" class="section-form">
-                                                <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <div class="form-group px-3 ">
-                                                            <label class="form-label flex-grow-1" for="Person">
-                                                                <strong>Person</strong> :
-                                                            </label>
-                                                        
-                                                            <!-- textarea input -->
-                                                            <!-- toggle switch -->
-                                                            <!-- common inputs -->
-                                                            <input id="Person" type="text" class="form-control " placeholder="Enter Name" value="" min=""
-                                                               multiple="" />
-                                                        </div>                        
-                                                      </div>
-                                                    <div class="col-sm-12">
-                                                        <div class="form-group px-3 d-flex flex-column">
-                                                            <label class="form-label flex-grow-1"
-                                                                for="cast-occupation"><strong>Occupation:</strong></label>
-                                                            <select id="cast-occupation" type="select" class="form-control select2-basic-multiple"
-                                                                placeholder="Select Occupation">
-                                                                <option>Cast</option>
-                                                                <option>Crew</option>
-                                                                <option>Production</option>
-                                                                <option>Director</option>
-                                                                <option>Actor</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12">
-                                                        <div class="form-group px-3 ">
-                                                            <label class="form-label flex-grow-1" for="As">
-                                                                <strong>As</strong> :
-                                                            </label>
-                                                        
-                                                            <!-- textarea input -->
-                                                            <!-- toggle switch -->
-                                                            <!-- common inputs -->
-                                                            <input id="As" type="text" class="form-control " placeholder="Played as" value="" min=""
-                                                               multiple="" />
-                                                        </div>                        
-                                                      </div>
-                                                    <div class="col-sm-12">
-                                                        <div class="form-group px-3 d-flex justify-content-between">
-                                                            <label class="form-label flex-grow-1" for="Status">
-                                                                <strong>Status</strong> :
-                                                            </label>
-                                                        
-                                                            <!-- textarea input -->
-                                                            <!-- toggle switch -->
-                                                                <div class="form-check form-switch ms-2">
-                                                                    <input id="Status" class="form-check-input" type="checkbox"  />
-                                                                </div>
-                                                        </div>                        
-                                                      </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="button" class="btn btn-primary">Save changes</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>                        
-                          </div>
+                                <strong>Video Files (By Language)</strong>
+                            </h5>                       
+                        </div>
                         <div class="row px-3">
                             <div class="col-sm-12">
                                 <div class="table-responsive">
-                                    <table class="table table-bordered table-strip">
+                                    <table class="table table-bordered table-striped">
                                         <thead>
                                             <tr class="text-center">
-                                                <th>Cast/Crew</th>
-                                                <th>Name</th>
-                                                <th>Role</th>
+                                                <th>Langue</th>
+                                                <th>Video File</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="tbody">
                                             <tr class="text-center">
-                                                <td>Cast</td>
-                                                <td>ABC</td>
-                                                <td>James</td>
+                                                <td>VF</td>
                                                 <td>
-                                                    <div class="d-flex align-items-center justify-content-center">
-                                                        <a aria-current="page" href="#" class="active text-success"
-                                                            title="Edit">
-                                                            <i class="fa-solid fa-pen mx-4"></i>
-                                                        </a>
-                                                        <a aria-current="page" href="#" class="active text-danger"
-                                                            title="Delete">
-                                                            <i class="fa-solid fa-trash me-4"></i>
-                                                        </a>
-                                                    </div>
+                                                    <input type="file" class="form-control" id="trailer_url" name="trailer_url" placeholder="Enter Url">
+                                                    <span style="color: #d9847a;" id="error-trailer_url"></span>
                                                 </td>
-                                            </tr>
-                                            <tr class="text-center">
-                                                <td>Crew</td>
-                                                <td>XYZ</td>
-                                                <td>Producer</td>
                                                 <td>
                                                     <div class="d-flex align-items-center justify-content-center">
-                                                        <a aria-current="page" href="#" class="active text-success"
-                                                            title="Edit">
-                                                            <i class="fa-solid fa-pen mx-4"></i>
-                                                        </a>
                                                         <a aria-current="page" href="#" class="active text-danger"
                                                             title="Delete">
                                                             <i class="fa-solid fa-trash me-4"></i>
@@ -203,82 +162,37 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mt-5">
-                            <div class="col-lg-3">
-                                <div class="form-group px-3 ">
-                                    <label class="form-label flex-grow-1" for="Content Rating">
-                                        <strong>Content Rating</strong> :
-                                    </label>
-                                
-                                    <!-- textarea input -->
-                                    <!-- toggle switch -->
-                                    <!-- common inputs -->
-                                    <input id="Content Rating" type="text" class="form-control " placeholder="Rating" value="" min=""
-                                       multiple="" />
-                                </div>                            
-                              </div>
-                            <div class="col-lg-3">
-                                <div class="form-group px-3">
-                                    <label class="form-label flex-grow-1" for="genres"><strong>Release
-                                            Date:</strong></label>
-                                    <input class="form-control flatpickr_humandate" type="text"
-                                        placeholder="release date.." data-id="multiple" readonly="readonly">
-                                </div>
-                            </div>
-                            <div class="col-lg-3">
-                                <div class="form-group px-3">
-                                    <label class="form-label flex-grow-1" for="genres"><strong>Publice
-                                            Date:</strong></label>
-                                    <input class="form-control flatpickr_humandate" type="text"
-                                        placeholder="publice date.." data-id="multiple" readonly="readonly">
-                                </div>
-                            </div>
-                            <div class="col-lg-3">
-                                <div class="form-group px-3 ">
-                                    <label class="form-label flex-grow-1" for="Duration">
-                                        <strong>Duration</strong> :
-                                    </label>
-                                
-                                    <!-- textarea input -->
-                                    <!-- toggle switch -->
-                                    <!-- common inputs -->
-                                    <input id="Duration" type="text" class="form-control " placeholder="Duration in mins" value="" min=""
-                                       multiple="" />
-                                </div>                            
-                              </div>
-                        </div>
                     </fieldset>
+                    <!-- Movie Files Div End -->
+
+                    <!-- Movie SEO Div Start -->
                     <fieldset>
                         <legend>SEO</legend>
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="form-group px-3 ">
-                                    <label class="form-label flex-grow-1" for="SEO Title">
+                                    <label class="form-label flex-grow-1" for="seo_title">
                                         <strong>SEO Title</strong> <span class="text-danger">*</span>:
                                     </label>
-                                
-                                    <!-- textarea input -->
-                                    <!-- toggle switch -->
-                                    <!-- common inputs -->
-                                    <input id="SEO Title" type="text" class="form-control " placeholder="Enter seo title" value="" min=""
-                                       multiple="" />
+                                    <input id="seo_title" name="seo_title" type="text" class="form-control " placeholder="Enter seo title" />
+                                    <span style="color: #d9847a;" id="error-seo_title"></span>
                                 </div>                            
                               </div>
                             <div class="col-sm-12">
                                 <div class="form-group px-3 ">
-                                    <label class="form-label flex-grow-1" for="SEO Description">
+                                    <label class="form-label flex-grow-1" for="seo_description">
                                         <strong>SEO Description</strong> <span class="text-danger">*</span>:
                                     </label>
-                                
-                                    <!-- textarea input -->
-                                    <textarea id="SEO Description" class="form-control" placeholder="SEO Description"></textarea>
+                                    <textarea id="seo_description" name="seo_description" class="form-control" placeholder="SEO Description"></textarea>
+                                    <span style="color: #d9847a;" id="error-seo_description"></span>
                                 </div>                            
                               </div>
                             <div class="col-sm-12">
                                 <div class="form-group px-3">
-                                    <label class="form-label flex-grow-1"
-                                        for="genres"><strong>Keywords:</strong></label>
-                                    <select id="genres" type="select" class="form-control select2-basic-multiple"
+                                    <label class="form-label flex-grow-1" for="meta_keywords">
+                                        <strong>Keywords:</strong>
+                                    </label>
+                                    <select id="meta_keywords" name="meta_keywords" type="select" class="form-control select2-basic-multiple"
                                         placeholder="select genres">
                                         <option>A</option>
                                         <option>B</option>
@@ -286,246 +200,12 @@
                                         <option>D</option>
                                         <option>E</option>
                                     </select>
+                                    <span style="color: #d9847a;" id="error-meta_keywords"></span>
                                 </div>
                             </div>
                         </div>
                     </fieldset>
-                    <fieldset>
-                        <legend>Media</legend>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group px-3 ">
-                                    <label class="form-label flex-grow-1" for="Thumbnail">
-                                        <strong>Thumbnail</strong> <span class="text-danger">*</span>:
-                                    </label>
-                                
-                                    <!-- textarea input -->
-                                    <!-- toggle switch -->
-                                    <!-- common inputs -->
-                                    <input id="Thumbnail" type="file" class="form-control " placeholder="" value="" min=""
-                                       multiple="" />
-                                </div>                            
-                              </div>
-                            <div class="col-sm-6">
-                                <div class="form-group px-3 ">
-                                    <label class="form-label flex-grow-1" for="poster">
-                                        <strong>poster</strong> <span class="text-danger">*</span>:
-                                    </label>
-                                
-                                    <!-- textarea input -->
-                                    <!-- toggle switch -->
-                                    <!-- common inputs -->
-                                    <input id="poster" type="file" class="form-control " placeholder="" value="" min=""
-                                       multiple="" />
-                                </div>                            
-                              </div>
-                            <div class="col-sm-12">
-                                <div class="form-group px-3 ">
-                                    <label class="form-label flex-grow-1" for="Trailer Url">
-                                        <strong>Trailer Url</strong> <span class="text-danger">*</span>:
-                                    </label>
-                                
-                                    <!-- textarea input -->
-                                    <!-- toggle switch -->
-                                    <!-- common inputs -->
-                                    <input id="Trailer Url" type="text" class="form-control " placeholder="Trailer Link" value="" min=""
-                                       multiple="" />
-                                </div>                            
-                              </div>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center my-4 px-3">
-                            <h5 class="mb-0">
-                                <strong>Video Quality</strong>
-                            </h5>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#video-modal">
-                                <i class="fa-solid fa-square-plus me-2"></i>Add Video
-                            </button>
-                            
-                            <div class="modal fade" id="video-modal" tabindex="-1" role="dialog" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="video-modal-label">Add Video</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="" class="section-form">
-                                                <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <div class="form-group px-3 d-flex flex-column">
-                                                            <label class="form-label flex-grow-1"
-                                                                for="quality"><strong>Quality:</strong></label>
-                                                            <select id="quality" type="select" class="form-control select2-basic-multiple"
-                                                                placeholder="Select Quality">
-                                                                <option>480p</option>
-                                                                <option>720p</option>
-                                                                <option>1080p</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12">
-                                                        <div class="form-group px-3 ">
-                                                            <label class="form-label flex-grow-1" for="Video">
-                                                                <strong>Video</strong> :
-                                                            </label>
-                                                        
-                                                            <!-- textarea input -->
-                                                            <!-- toggle switch -->
-                                                            <!-- common inputs -->
-                                                            <input id="Video" type="file" class="form-control " placeholder="" value="" min=""
-                                                               multiple="" />
-                                                        </div>                        
-                                                      </div>
-                                                    <div class="col-sm-12">
-                                                        <div class="form-group px-3 d-flex justify-content-between">
-                                                            <label class="form-label flex-grow-1" for="Download Link">
-                                                                <strong>Download Link</strong> :
-                                                            </label>
-                                                        
-                                                            <!-- textarea input -->
-                                                            <!-- toggle switch -->
-                                                                <div class="form-check form-switch ms-2">
-                                                                    <input id="Download Link" class="form-check-input" type="checkbox"  />
-                                                                </div>
-                                                        </div>                        
-                                                      </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="button" class="btn btn-primary">Save changes</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>                        
-                          </div>
-                        <div class="row px-3">
-                            <div class="col-sm-12">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-striped">
-                                        <thead>
-                                            <tr class="text-center">
-                                                <th>Quality</th>
-                                                <th>Video URL</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr class="text-center">
-                                                <td>720P</td>
-                                                <td>video_720.mp4</td>
-                                                <td>
-                                                    <div class="d-flex align-items-center justify-content-center">
-                                                        <a aria-current="page" href="#" class="active text-success"
-                                                            title="Edit">
-                                                            <i class="fa-solid fa-pen mx-4"></i>
-                                                        </a>
-                                                        <a aria-current="page" href="#" class="active text-danger"
-                                                            title="Delete">
-                                                            <i class="fa-solid fa-trash me-4"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center my-4 px-3">
-                            <h5 class="mb-0">
-                                <strong>Subtitles</strong>
-                            </h5>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#subtitle-modal">
-                                <i class="fa-solid fa-square-plus me-2"></i>Add Subtitle
-                            </button>
-                            
-                            <div class="modal fade" id="subtitle-modal" tabindex="-1" role="dialog" aria-hidden="true">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="subtitle-modal-label">Add Subtitle</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="" class="section-form">
-                                                <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <div class="form-group px-3 d-flex flex-column">
-                                                            <label class="form-label flex-grow-1" for="subtitle-language">
-                                                                <strong>Subtitle:</strong>
-                                                            </label>
-                                                            <select id="subtitle-language" type="select" class="form-control select2-basic-multiple"
-                                                                placeholder="select subtitle">
-                                                                <option>Hindi</option>
-                                                                <option>English</option>
-                                                                <option>French</option>
-                                                                <option>Marathi</option>
-                                                                <option>Gujrati</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-12">
-                                                        <div class="form-group px-3 ">
-                                                            <label class="form-label flex-grow-1" for="File">
-                                                                <strong>File</strong> :
-                                                            </label>
-                                                        
-                                                            <!-- textarea input -->
-                                                            <!-- toggle switch -->
-                                                            <!-- common inputs -->
-                                                            <input id="File" type="file" class="form-control " placeholder="" value="" min=""
-                                                               multiple="" />
-                                                        </div>                        
-                                                      </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="button" class="btn btn-primary">Save changes</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>                        
-                          </div>
-                        <div class="row px-3">
-                            <div class="col-sm-12">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-striped">
-                                        <thead>
-                                            <tr class="text-center">
-                                                <th>Language</th>
-                                                <th>URL</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr class="text-center">
-                                                <td>English</td>
-                                                <td>English.txt</td>
-                                                <td>
-                                                    <div class="d-flex align-items-center justify-content-center">
-                                                        <a aria-current="page" href="#" class="active text-success"
-                                                            title="Edit">
-                                                            <i class="fa-solid fa-pen mx-4"></i>
-                                                        </a>
-                                                        <a aria-current="page" href="#" class="active text-danger"
-                                                            title="Delete">
-                                                            <i class="fa-solid fa-trash me-4"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
+                    <!-- Movie SEO Div End -->
                 </div>
             </form>
         </div>

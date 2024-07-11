@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from movie import services, schemas, responses
 from typing import Optional, List
+from datetime import datetime
 
 
 router = APIRouter(
@@ -19,17 +20,25 @@ async def create_movie(
     cover_player: UploadFile = Form(...),
     genreId: List[int] = Form(...),
     langueId: int = Form(...),
+    # langueId: List[int] = Form(...),
     title: str = Form(...),
     cover_image: UploadFile = Form(...),
     description: Optional[str] = Form(None),
+    publication_date: Optional[datetime] = Form(None),
+    trailer_url: Optional[str] = Form(...),
     release_year: Optional[str] = Form(None),
     running_time: Optional[str] = Form(None),
     age_limit: Optional[str] = Form(None),
     zip_file: UploadFile = Form(...),
+    # zip_files: List[UploadFile] = Form(...),
     movie_type: str = Form(...),
     meta_keywords: str = Form(...),
+    seo_title: Optional[str] = Form(None),
+    seo_description: Optional[str] = Form(None),
     db: Session = Depends(get_db)
 ):
+    """Make for each for zip_files"""
+    
     return await services.create_movie(
         cover_player=cover_player,
         genreId=genreId,
@@ -37,12 +46,16 @@ async def create_movie(
         title=title,
         cover_image=cover_image,
         description=description,
+        publication_date=publication_date,
+        trailer_url=trailer_url,
         release_year=release_year,
         running_time=running_time,
         age_limit=age_limit,
         zip_file=zip_file,
         movie_type=movie_type, 
         meta_keywords=meta_keywords,
+        seo_title=seo_title,
+        seo_description=seo_description,
         background=background,
         db=db
     )

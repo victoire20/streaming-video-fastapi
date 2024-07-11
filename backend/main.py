@@ -178,24 +178,6 @@ async def index_root(id: int, request: Request, response: Response):
     )
 
 
-@app.get('/add-movie')
-async def index_root(request: Request, response: Response):
-    await verify_cookies(request=request, response=response)
-    return templates.TemplateResponse(
-        'movie-pages/add-movie.html', 
-        context={'request': request, 'page': 'movies'}
-    )
-    
-    
-@app.get('/{id}/update-movie')
-async def index_root(id: int, request: Request, response: Response):
-    await verify_cookies(request=request, response=response)
-    return templates.TemplateResponse(
-        'movie-pages/edit-movie.html', 
-        context={'request': request, 'page': 'movies', 'id': id}
-    )
-
-
 @app.get('/file-management')
 async def index_root(request: Request, response: Response):
     if not request.cookies.get('access_token'):

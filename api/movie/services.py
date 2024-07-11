@@ -57,11 +57,15 @@ async def create_movie(
     db: Session,
     background: BackgroundTasks,
     description: Optional[str] = None,
+    publication_date: Optional[datetime] = None,
+    trailer_url: Optional[str] = None,
     release_year: Optional[str] = None,
     running_time: Optional[str] = None,
     age_limit: Optional[str] = None,
-    meta_keywords: Optional[str] = None
-) -> str:
+    meta_keywords: Optional[str] = None,
+    seo_title: Optional[str] = None,
+    seo_description: Optional[str] = None
+) -> str:    
     timestamp = int(time.time())
     movie = (
         db.query(Movie)
@@ -206,19 +210,29 @@ async def create_movie(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail='Failed to save cover player.'
         )
-        
+    
+    if not publication_date:
+        is_published=False
+    else:
+        is_published = True
+            
     new_movie = Movie(
         cover_player=cover_p_filename,
         langueId=langueId,
         title=title,
         cover_image=cover_image_filename,
         description=description,
+        publication_date=publication_date,
+        trailer_url=trailer_url,
         release_year=release_year,
         running_time=running_time,
         age_limit=age_limit,
         movie_type=movie_type,
         zip_file=zip_filename,
-        meta_keywords=meta_keywords
+        meta_keywords=meta_keywords,
+        seo_title=seo_title,
+        seo_description=seo_description,
+        is_published=is_published
     )
     db.add(new_movie)
     db.commit()

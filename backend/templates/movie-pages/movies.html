@@ -63,9 +63,77 @@ dashboard, backoffice
 
     <script>
         $(function() {
+            access_token = getCookie('access_token')
             initMovieData()
-            getLanguages()
-            getGenres()
+            $('#langueId').select2({
+                placeholder: {id: '-1', text: 'Select Languages'},
+                allowClear: true,
+                closeOnSelect: false,
+                ajax: {
+                    url: 'http://127.0.0.1:8000/languages/',
+                    method: 'GET',
+                    dataType: 'json',
+                    headers: {
+                        'accept': 'application/json',
+                        'Authorization': 'Bearer ' + access_token
+                    },
+                    processResults: function (data) {
+                        var result = [];
+                        $.each(data, function(key, value) {
+                            if(value.is_active) {
+                                result.push({
+                                    id: value.id,
+                                    text: value.libelle.toUpperCase()
+                                });
+                            }
+                        });
+                        return {
+                            results: result
+                        };
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('Error fetching languages:', textStatus, errorThrown)
+                    }
+                }
+            })
+
+            $('#genreId').select2({
+                placeholder: {id: '-1', text: 'Select Categories'},
+                allowClear: true,
+                closeOnSelect: false,
+                ajax: {
+                    url: 'http://127.0.0.1:8000/genres/',
+                    method: 'GET',
+                    dataType: 'json',
+                    headers: {
+                        'accept': 'application/json',
+                        'Authorization': 'Bearer ' + access_token
+                    },
+                    processResults: function (data) {
+                        var result = [];
+                        $.each(data, function(key, value) {
+                            if(value.is_active) {
+                                result.push({
+                                    id: value.id,
+                                    text: value.libelle.toUpperCase()
+                                });
+                            }
+                        });
+                        return {
+                            results: result
+                        };
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('Error fetching genres:', textStatus, errorThrown)
+                    }
+                }
+            })
+
+            $('#langueId').on('select2:select', function (e) {
+                var data = e.params.data
+                console.log(e)
+                $('#tbody')
+            })
         })
 
         function getCookie(cname) {
@@ -193,89 +261,45 @@ dashboard, backoffice
             }
         }
 
-        function getLanguages() {
-            access_token = getCookie('access_token')
-            $.ajax({
-                url: `http://127.0.0.1:8000/languages/`,
-                method: 'GET',
-                dataType: 'JSON',
-                headers: {
-                    'accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + access_token
-                },
-                success: function(data) {
-                    var list = ''
-                    list += "<option value=''>Select Languages</option>"
-                    $.each(data, function(key, value) {
-                        if(value.is_active) {
-                            list += "<option value="+value.id+">"+value.libelle.toUpperCase()+"</option>"
-                        }
-                    })
-                    $('#langueId').html(list)
-                }
-            })
-        }
-
-        function getGenres() {
-            access_token = getCookie('access_token')
-            $.ajax({
-                url: `http://127.0.0.1:8000/genres/`,
-                method: 'GET',
-                dataType: 'JSON',
-                headers: {
-                    'accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + access_token
-                },
-                success: function(data) {
-                    var list = ''
-                    list += "<option value=''>Select Categories</option>"
-                    $.each(data, function(key, value) {
-                        if(value.is_active) {
-                            list += "<option value="+value.id+">"+value.libelle.toUpperCase()+"</option>"
-                        }
-                    })
-                    $('#genreId').html(list)
-                }
-            })
-        }
-
         function darken_screen(yesno) {
-            if (yesno == true) {
-                if (document.querySelector('.screen-darken') !== null) {
-                document.querySelector('.screen-darken').classList.add('active')
-                }
-            }
-            else if (yesno == false) {
-                if (document.querySelector('.screen-darken') !== null) {
-                document.querySelector('.screen-darken').classList.remove('active')
+            const screenDarken = document.querySelector('.screen-darken');
+            if (screenDarken !== null) {
+                if (yesno) {
+                    screenDarken.classList.add('active');
+                } else {
+                    screenDarken.classList.remove('active');
                 }
             }
         }
-
-        function close_offcanvas() {
+        
+        function close_offcanvas(offcanvas_id) {
             darken_screen(false);
-            if (document.querySelector('.mobile-offcanvas.show') !== null) {
-                document.querySelector('.mobile-offcanvas.show').classList.remove('show')
-                document.body.classList.remove('offcanvas-active')
+            const offcanvasElement = document.getElementById(offcanvas_id);
+            if (offcanvasElement !== null && offcanvasElement.classList.contains('show')) {
+                offcanvasElement.classList.remove('show');
+                document.body.classList.remove('offcanvas-active');
             }
         }
+        
         function show_offcanvas(offcanvas_id) {
             darken_screen(true);
-            if (document.getElementById(offcanvas_id) !== null) {
-                document.getElementById(offcanvas_id).classList.add('show')
-                document.body.classList.add('offcanvas-active')
+            const offcanvasElement = document.getElementById(offcanvas_id);
+            if (offcanvasElement !== null) {
+                offcanvasElement.classList.add('show');
+                document.body.classList.add('offcanvas-active');
             }
         }
-
-        $('#newMovie').on('click', function() {
-            show_offcanvas('season-offcanvas')
-        })
-
-        $('#btnClose').on('click', function() {
-            close_offcanvas()
-        })
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            $('#newMovie').on('click', function() {
+                show_offcanvas('season-offcanvas');
+            });
+        
+            $('#btnClose').on('click', function() {
+                $('#movieForm')[0].reset()
+                close_offcanvas('season-offcanvas');
+            });
+        });
     </script>
     
 {% endblock %}
