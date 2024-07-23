@@ -134,7 +134,7 @@ async def forgotten_password_user(request: dict, db: Session):
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     
-    user.password = get_password_hash(new_password)
+    user.password = get_password_hash(request.new_password)
     
     # Send new password in email
     smtp_server = settings.EMAIL_SERVER
@@ -146,7 +146,7 @@ async def forgotten_password_user(request: dict, db: Session):
     template = env.get_template('email.html')
 
     subject = 'Your New Password'
-    html_content = template.render(new_password=new_password)
+    html_content = template.render(new_password=request.new_password)
     
     em = EmailMessage()                    
     em['From'] = smtp_username

@@ -1,5 +1,7 @@
 from fastapi import HTTPException, status, UploadFile, Request, BackgroundTasks
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
+from sqlalchemy.exc import SQLAlchemyError
 from typing import List, Optional
 from PIL import Image
 from datetime import datetime
@@ -52,7 +54,8 @@ async def create_movie(
     langueId: int,
     title: str,
     cover_image: UploadFile,
-    zip_file: UploadFile,
+    # zip_file: UploadFile,
+    zip_files: List[UploadFile],
     movie_type: str,
     db: Session,
     background: BackgroundTasks,
@@ -65,185 +68,202 @@ async def create_movie(
     meta_keywords: Optional[str] = None,
     seo_title: Optional[str] = None,
     seo_description: Optional[str] = None
-) -> str:    
-    timestamp = int(time.time())
-    movie = (
-        db.query(Movie)
-        .filter(func.lower(Movie.title) == title.lower(), Movie.langueId == langueId)
-        .first()
-    )
-    if movie:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='This movie already exists.'
+) -> str:
+    try:    
+        timestamp = int(time.time())
+        movie = (
+            db.query(Movie)
+            .filter(func.lower(Movie.title) == title.lower(), Movie.langueId == langueId)
+            .first()
         )
+        if movie:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='This movie already exists.'
+            )
+            
+        if cover_player.size > 1 * 1024 * 1024:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Cover Player size should not exceed 1MB.'
+            )
+            
+        img_player = await cover_player.read()
+        p_width, p_height = get_image_dimensions(img_player)
+        if p_width < 1000:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Width of the player image must not be less than 1000 px'
+            )
         
-    if cover_player.size > 1 * 1024 * 1024:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Cover Player size should not exceed 1MB.'
-        )
+        if p_height < 500:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Height of the player image must not be less than 500 px'
+            )
         
-    img_player = await cover_player.read()
-    p_width, p_height = get_image_dimensions(img_player)
-    if p_width < 1000:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Width of the player image must not be less than 1000 px'
-        )
-    
-    if p_height < 500:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Height of the player image must not be less than 500 px'
-        )
-    
-    new_p_image = Image.open(io.BytesIO(img_player))
-    new_p_image = new_p_image.resize((1110, 624))
-    
-    cover_p_extension = cover_player.content_type.split('/')[1]
-    if cover_p_extension not in ['jpeg', 'jpg']:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Cover player type should be either jpeg or jpg.'
-        )
+        new_p_image = Image.open(io.BytesIO(img_player))
+        new_p_image = new_p_image.resize((1110, 624))
         
-    os.makedirs(TEMP_DIR, exist_ok=True)
-    
-    temp_cover_p_filename = f'{timestamp}_p_temp.{cover_p_extension}'
-    temp_cover_p_path = os.path.join(TEMP_DIR, temp_cover_p_filename)
-    
-    new_p_image.save(temp_cover_p_path)
-    if not os.path.isfile(temp_cover_p_path):
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='Failed to save cover player temporarily.'
-        )
-    
-    cover_p_filename = f'{timestamp}_p.{cover_p_extension}'
-    cover_p_path = os.path.join(BASE_MEDIA_URL, 'images', cover_p_filename)
+        cover_p_extension = cover_player.content_type.split('/')[1]
+        if cover_p_extension not in ['jpeg', 'jpg']:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Cover player type should be either jpeg or jpg.'
+            )
+            
+        os.makedirs(TEMP_DIR, exist_ok=True)
+        
+        temp_cover_p_filename = f'{timestamp}_p_temp.{cover_p_extension}'
+        temp_cover_p_path = os.path.join(TEMP_DIR, temp_cover_p_filename)
+        
+        new_p_image.save(temp_cover_p_path)
+        if not os.path.isfile(temp_cover_p_path):
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail='Failed to save cover player temporarily.'
+            )
+        
+        cover_p_filename = f'{timestamp}_p.{cover_p_extension}'
+        cover_p_path = os.path.join(BASE_MEDIA_URL, 'images', cover_p_filename)
 
-    for genre_id in genreId:
-        if not db.query(Genre).filter(Genre.id == genre_id).first():
+        for genre_id in genreId:
+            if not db.query(Genre).filter(Genre.id == genre_id).first():
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="This genre doesn't exist."
+                )
+
+        if not db.query(Langue).filter(Langue.id == langueId).first():
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="This genre doesn't exist."
+                detail="This language doesn't exist."
+            )
+        
+        if movie_type.lower() not in ['serie', 'film']:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='The only two types allowed are serie or film.'
             )
 
-    if not db.query(Langue).filter(Langue.id == langueId).first():
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="This language doesn't exist."
-        )
-    
-    if movie_type.lower() not in ['serie', 'film']:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='The only two types allowed are serie or film.'
-        )
-
-    # Vérification de la taille de l'image de couverture 1Mo
-    if cover_image.size > 1 * 1024 * 1024:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Cover image size should not exceed 1MB.'
-        )
-        
-    # Lire le contenu de l'image en mémoire
-    cover_image_content = await cover_image.read()
-
-    # Lire et redimensionner l'image
-    new_image = Image.open(io.BytesIO(cover_image_content))
-    new_image = new_image.resize((190, 270))
-
-    cover_image_extension = cover_image.content_type.split('/')[1]
-    if cover_image_extension not in ['jpeg', 'jpg']:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='Cover image type should be either jpeg ou jpg.'
-        )
-
-    temp_cover_image_filename = f'{timestamp}_cover_temp.{cover_image_extension}'
-    temp_cover_image_path = os.path.join(TEMP_DIR, temp_cover_image_filename)
-    
-    new_image.save(temp_cover_image_path)
-    if not os.path.isfile(temp_cover_image_path):
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='Failed to save cover image temporarily.'
-        )
-    
-    cover_image_filename = f'{timestamp}.{cover_image_extension}'
-    cover_image_path = os.path.join(BASE_MEDIA_URL, 'images', cover_image_filename)        
-    
-    if not zip_file:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='No videos provided.'
-        )
-
-    if not (zip_file.filename.endswith('.zip') or zip_file.filename.endswith('.rar')):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='The file must have a zip or rar extension.'
-        )
-    
-    if zip_file.filename.endswith('.zip'):
-        zip_filename = f'{timestamp}.zip'
-    else:
-        zip_filename = f'{timestamp}.rar'
-    
-    background.add_task(await save_large_file(zip_file, zip_filename, BASE_MEDIA_URL))
-    
-    # Sauvegarde de l'image de couverture
-    shutil.move(temp_cover_p_path, cover_p_path)
-    shutil.move(temp_cover_image_path, cover_image_path)
-
-    # Vérification si les images ont bien été sauvegardées
-    if not os.path.isfile(cover_image_path):
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='Failed to save cover image.'
-        )
-    if not os.path.isfile(cover_p_path):
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail='Failed to save cover player.'
-        )
-    
-    if not publication_date:
-        is_published=False
-    else:
-        is_published = True
+        # Vérification de la taille de l'image de couverture 1Mo
+        if cover_image.size > 1 * 1024 * 1024:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Cover image size should not exceed 1MB.'
+            )
             
-    new_movie = Movie(
-        cover_player=cover_p_filename,
-        langueId=langueId,
-        title=title,
-        cover_image=cover_image_filename,
-        description=description,
-        publication_date=publication_date,
-        trailer_url=trailer_url,
-        release_year=release_year,
-        running_time=running_time,
-        age_limit=age_limit,
-        movie_type=movie_type,
-        zip_file=zip_filename,
-        meta_keywords=meta_keywords,
-        seo_title=seo_title,
-        seo_description=seo_description,
-        is_published=is_published
-    )
-    db.add(new_movie)
-    db.commit()
-    db.refresh(new_movie)
+        # Lire le contenu de l'image en mémoire
+        cover_image_content = await cover_image.read()
 
-    for genre_id in genreId:
-        new_genre_movie = GenreMovie(genreId=genre_id, movieId=new_movie.id)
-        db.add(new_genre_movie)
-        db.commit()
+        # Lire et redimensionner l'image
+        new_image = Image.open(io.BytesIO(cover_image_content))
+        new_image = new_image.resize((190, 270))
+
+        cover_image_extension = cover_image.content_type.split('/')[1]
+        if cover_image_extension not in ['jpeg', 'jpg']:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Cover image type should be either jpeg ou jpg.'
+            )
+
+        temp_cover_image_filename = f'{timestamp}_cover_temp.{cover_image_extension}'
+        temp_cover_image_path = os.path.join(TEMP_DIR, temp_cover_image_filename)
         
-    return "Movie created successfully."
+        new_image.save(temp_cover_image_path)
+        if not os.path.isfile(temp_cover_image_path):
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail='Failed to save cover image temporarily.'
+            )
+        
+        cover_image_filename = f'{timestamp}.{cover_image_extension}'
+        cover_image_path = os.path.join(BASE_MEDIA_URL, 'images', cover_image_filename)        
+        
+        if not zip_files:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='No videos provided.'
+            )
+
+        for zip_file in zip_files:
+            if not (zip_file.filename.endswith('.zip') or zip_file.filename.endswith('.rar')):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail='The file must have a zip or rar extension.'
+                )
+        
+            if zip_file.filename.endswith('.zip'):
+                zip_filename = f'{timestamp}.zip'
+            else:
+                zip_filename = f'{timestamp}.rar'
+        
+            background.add_task(await save_large_file(zip_file, zip_filename, BASE_MEDIA_URL))
+        
+            # Sauvegarde de l'image de couverture
+            shutil.move(temp_cover_p_path, cover_p_path)
+            shutil.move(temp_cover_image_path, cover_image_path)
+
+            # Vérification si les images ont bien été sauvegardées
+            if not os.path.isfile(cover_image_path):
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail='Failed to save cover image.'
+                )
+            if not os.path.isfile(cover_p_path):
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail='Failed to save cover player.'
+                )
+        
+        if not publication_date:
+            is_published=False
+        else:
+            is_published = True
+
+        for lang in langueId:        
+            new_movie = Movie(
+                cover_player=cover_p_filename,
+                langueId=lang,
+                title=title,
+                cover_image=cover_image_filename,
+                description=description,
+                publication_date=publication_date,
+                trailer_url=trailer_url,
+                release_year=release_year,
+                running_time=running_time,
+                age_limit=age_limit,
+                movie_type=movie_type,
+                zip_file=zip_filename,
+                meta_keywords=meta_keywords,
+                seo_title=seo_title,
+                seo_description=seo_description,
+                is_published=is_published
+            )
+            db.add(new_movie)
+            db.flush()
+            # db.commit()
+            # db.refresh(new_movie)
+
+        for genre_id in genreId:
+            new_genre_movie = GenreMovie(genreId=genre_id, movieId=new_movie.id)
+            db.add(new_genre_movie)
+            
+        db.commit()
+            
+        return "Movie created successfully."
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="An error occurred while creating the webhook."
+        )
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        ) from e
 
 async def get_movies(request: Request, db: Session):
     return db.query(Movie).all()
@@ -277,184 +297,197 @@ async def update_movie(
     age_limit: Optional[str] = None,
     meta_keywords: Optional[str] = None
 ) -> str:
-    timestamp = int(time.time())
-    movie = (
-        db.query(Movie)
-        .filter(Movie.id != id)
-        .filter(func.lower(Movie.title) == title.lower(), Movie.langueId == langueId)
-        .first()
-    )
-    if movie:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='This movie already exists.'
+    try:
+        timestamp = int(time.time())
+        movie = (
+            db.query(Movie)
+            .filter(Movie.id != id)
+            .filter(func.lower(Movie.title) == title.lower(), Movie.langueId == langueId)
+            .first()
         )
-     
-    if title:
-        movie.title = title 
-        
-    if description:
-        movie.description = description
-        
-    if release_year:
-        movie.release_year = release_year
-        
-    if running_time:
-        movie.running_time = running_time
-        
-    if age_limit:
-        movie.age_limit = age_limit
-        
-    if meta_keywords:
-        movie.meta_keywords = meta_keywords
-       
-    if cover_player:
-        if cover_player.size > 1 * 1024 * 1024:
+        if movie:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Cover Player size should not exceed 1MB.'
+                detail='This movie already exists.'
             )
+        
+        if title:
+            movie.title = title 
             
-        img_player = await cover_player.read()
-        p_width, p_height = get_image_dimensions(img_player)
-        if p_width < 1000:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Height of the player image must not be greater than 1000 px'
-            )
-        
-        if p_height < 500:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Height of the player image must not be greater than 624 px'
-            )
-        
-        new_p_image = Image.open(io.BytesIO(img_player))
-        new_p_image = new_p_image.resize((1110, 624))
-        
-        cover_p_extension = cover_player.content_type.split('/')[1]
-        if cover_p_extension not in ['jpeg', 'jpg']:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Cover player type should be either jpeg or jpg.'
-            )
+        if description:
+            movie.description = description
             
-        os.makedirs(TEMP_DIR, exist_ok=True)
-        
-        temp_cover_p_filename = f'{timestamp}_p_temp.{cover_p_extension}'
-        temp_cover_p_path = os.path.join(TEMP_DIR, temp_cover_p_filename)
-        
-        new_p_image.save(temp_cover_p_path)
-        if not os.path.isfile(temp_cover_p_path):
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail='Failed to save cover player temporarily.'
-            )
+        if release_year:
+            movie.release_year = release_year
             
-        cover_p_filename = f'{timestamp}_p.{cover_p_extension}'
-        cover_p_path = os.path.join(BASE_MEDIA_URL, 'images', cover_p_filename)
+        if running_time:
+            movie.running_time = running_time
+            
+        if age_limit:
+            movie.age_limit = age_limit
+            
+        if meta_keywords:
+            movie.meta_keywords = meta_keywords
         
-        shutil.move(temp_cover_p_path, cover_p_path)
+        if cover_player:
+            if cover_player.size > 1 * 1024 * 1024:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail='Cover Player size should not exceed 1MB.'
+                )
+                
+            img_player = await cover_player.read()
+            p_width, p_height = get_image_dimensions(img_player)
+            if p_width < 1000:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail='Height of the player image must not be greater than 1000 px'
+                )
+            
+            if p_height < 500:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail='Height of the player image must not be greater than 624 px'
+                )
+            
+            new_p_image = Image.open(io.BytesIO(img_player))
+            new_p_image = new_p_image.resize((1110, 624))
+            
+            cover_p_extension = cover_player.content_type.split('/')[1]
+            if cover_p_extension not in ['jpeg', 'jpg']:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail='Cover player type should be either jpeg or jpg.'
+                )
+                
+            os.makedirs(TEMP_DIR, exist_ok=True)
+            
+            temp_cover_p_filename = f'{timestamp}_p_temp.{cover_p_extension}'
+            temp_cover_p_path = os.path.join(TEMP_DIR, temp_cover_p_filename)
+            
+            new_p_image.save(temp_cover_p_path)
+            if not os.path.isfile(temp_cover_p_path):
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail='Failed to save cover player temporarily.'
+                )
+                
+            cover_p_filename = f'{timestamp}_p.{cover_p_extension}'
+            cover_p_path = os.path.join(BASE_MEDIA_URL, 'images', cover_p_filename)
+            
+            shutil.move(temp_cover_p_path, cover_p_path)
+            
+            if not os.path.isfile(cover_p_path):
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail='Failed to save cover player.'
+                )
+            movie.cover_player = cover_p_filename
         
-        if not os.path.isfile(cover_p_path):
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail='Failed to save cover player.'
-            )
-        movie.cover_player = cover_p_filename
-    
-    if genreId:
-        for genre_id in genreId:
-            if not db.query(Genre).filter(Genre.id == genre_id).first():
+        if genreId:
+            for genre_id in genreId:
+                if not db.query(Genre).filter(Genre.id == genre_id).first():
+                    raise HTTPException(
+                        status_code=status.HTTP_404_NOT_FOUND,
+                        detail="This genre doesn't exist."
+                    )
+            
+            db.query(GenreMovie).filter(GenreMovie.movieId == movie.id).delete()
+            db.commit()
+            
+            for genre_id in genreId:
+                new_genre_movie = GenreMovie(genreId=genre_id, movieId=movie.id)
+                db.add(new_genre_movie)
+
+        if langueId:
+            if not db.query(Langue).filter(Langue.id == langueId).first():
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail="This genre doesn't exist."
+                    detail="This language doesn't exist."
                 )
+            movie.langueId = langueId
+                
+        if movie_type:
+            if movie_type.lower() not in ['serie', 'film']:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail='The only two types allowed are serie or film.'
+                )
+            movie.movie_type = movie_type
         
-        db.query(GenreMovie).filter(GenreMovie.movieId == movie.id).delete()
-        db.commit()
-        
-        for genre_id in genreId:
-            new_genre_movie = GenreMovie(genreId=genre_id, movieId=movie.id)
-            db.add(new_genre_movie)
-
-    if langueId:
-        if not db.query(Langue).filter(Langue.id == langueId).first():
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="This language doesn't exist."
-            )
-        movie.langueId = langueId
+        if cover_image:
+            if cover_image.size > 1 * 1024 * 1024:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail='Cover image size should not exceed 1MB.'
+                )
             
-    if movie_type:
-        if movie_type.lower() not in ['serie', 'film']:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='The only two types allowed are serie or film.'
-            )
-        movie.movie_type = movie_type
-    
-    if cover_image:
-        if cover_image.size > 1 * 1024 * 1024:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Cover image size should not exceed 1MB.'
-            )
-        
-        cover_image_content = await cover_image.read()
+            cover_image_content = await cover_image.read()
 
-        new_image = Image.open(io.BytesIO(cover_image_content))
-        new_image = new_image.resize((190, 270))
+            new_image = Image.open(io.BytesIO(cover_image_content))
+            new_image = new_image.resize((190, 270))
 
-        cover_image_extension = cover_image.content_type.split('/')[1]
-        if cover_image_extension not in ['jpeg', 'jpg']:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Cover image type should be either jpeg or jpg.'
-            )
+            cover_image_extension = cover_image.content_type.split('/')[1]
+            if cover_image_extension not in ['jpeg', 'jpg']:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail='Cover image type should be either jpeg or jpg.'
+                )
 
-        temp_cover_image_filename = f'{timestamp}_temp.{cover_image_extension}'
-        temp_cover_image_path = os.path.join(TEMP_DIR, temp_cover_image_filename)
+            temp_cover_image_filename = f'{timestamp}_temp.{cover_image_extension}'
+            temp_cover_image_path = os.path.join(TEMP_DIR, temp_cover_image_filename)
+            
+            new_image.save(temp_cover_image_path)
+            if not os.path.isfile(temp_cover_image_path):
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail='Failed to save cover image temporarily.'
+                )
+            
+            cover_image_filename = f'{timestamp}.{cover_image_extension}'
+            cover_image_path = os.path.join(BASE_MEDIA_URL, 'images', cover_image_filename)
+            
+            shutil.move(temp_cover_image_path, cover_image_path)
+            
+            if not os.path.isfile(cover_image_path):
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail='Failed to save cover image.'
+                )
+            
+            movie.cover_image = cover_image_filename 
         
-        new_image.save(temp_cover_image_path)
-        if not os.path.isfile(temp_cover_image_path):
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail='Failed to save cover image temporarily.'
-            )
-        
-        cover_image_filename = f'{timestamp}.{cover_image_extension}'
-        cover_image_path = os.path.join(BASE_MEDIA_URL, 'images', cover_image_filename)
-        
-        shutil.move(temp_cover_image_path, cover_image_path)
-        
-        if not os.path.isfile(cover_image_path):
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail='Failed to save cover image.'
-            )
-        
-        movie.cover_image = cover_image_filename 
-    
-    if zip_file:
-        if not (zip_file.filename.endswith('.zip') or zip_file.filename.endswith('.rar')):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='The file must have a zip or rar extension.'
-            )
-        
-        if zip_file.filename.endswith('.zip'):
-            zip_filename = f'{timestamp}.zip'
-        else:
-            zip_filename = f'{timestamp}.rar'
-        
-        background.add_task(save_large_file(zip_file, zip_filename, BASE_MEDIA_URL))
-        movie.zip_file = zip_filename 
-        
-    movie.updated_at = datetime.now()
-    db.commit()
-    db.refresh(movie)
-    return 'Movie is updated successfully!'
+        if zip_file:
+            if not (zip_file.filename.endswith('.zip') or zip_file.filename.endswith('.rar')):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail='The file must have a zip or rar extension.'
+                )
+            
+            if zip_file.filename.endswith('.zip'):
+                zip_filename = f'{timestamp}.zip'
+            else:
+                zip_filename = f'{timestamp}.rar'
+            
+            background.add_task(save_large_file(zip_file, zip_filename, BASE_MEDIA_URL))
+            movie.zip_file = zip_filename 
+            
+        movie.updated_at = datetime.now()
+        db.commit()
+        db.refresh(movie)
+        return 'Movie is updated successfully!'
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="An error occurred while creating the webhook."
+        )
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        ) from e
         
     
     

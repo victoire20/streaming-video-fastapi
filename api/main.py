@@ -39,6 +39,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.add_middleware(AuthenticationMiddleware, backend=JWTAuth())
+
 @app.middleware('http')
 async def db_session_middleware(request, call_next):
     response = Response("Internal server error", status_code=500)
